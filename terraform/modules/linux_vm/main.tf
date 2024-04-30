@@ -19,7 +19,7 @@ locals {
 }
 
 module "vnet" {
-    source = "C:/Users/User/Downloads/cluster/AZ.Projects/terraform/modules/generic_resources/vnet"
+    source = "git::https://github.com/sgrthati/AZ.Projects.git//terraform/modules/generic_resources/vnet?ref=main"
     resource_group_name = local.resource_group_name
 }
 
@@ -47,7 +47,7 @@ resource "azurerm_network_interface" "nic" {
   tags = "${local.tags}"
 }
 module "lb" {
-    source = "C:/Users/User/Downloads/cluster/AZ.Projects/terraform/modules/generic_resources/loadbalancer"
+    source = "git::https://git@github.com:sgrthati/AZ.Projects.git//terraform/modules/generic_resources/loadbalancer?ref=main"
     resource_group_name = local.resource_group_name
     lb_enabled = var.lb_enabled
 }
@@ -68,7 +68,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   network_interface_ids = [element(azurerm_network_interface.nic.*.id, count.index)]
   admin_username = "${var.admin_username}"
   size             = "${var.vm_size}"
-  custom_data = filebase64("/mnt/c/Users/User/Downloads/cluster/AZ.Projects/terraform/modules/scripts/script.sh")
+  custom_data = filebase64(var.customer_data_script)
   admin_ssh_key {
     username   = var.admin_username
     public_key = local.key_data
@@ -109,7 +109,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
 }
 
 module "pr_dns_zn" {
-  source = "/mnt/c/Users/User/Downloads/cluster/AZ.Projects/terraform/modules/generic_resources/private_dns_zone"
+  source = "git::https://git@github.com:sgrthati/AZ.Projects.git//terraform/modules/generic_resources/private_dns_zone?ref=main"
   resource_group_name = var.resource_group_name
   depends_on = [ azurerm_linux_virtual_machine.vm ]
   dns_enabled = var.dns_enabled

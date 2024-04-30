@@ -73,9 +73,9 @@ variable "backend_address_pool_id" {
   description = "(Optional) List of Load Balancer Backend Address Pool IDs references to which this NIC belongs"
   default     = ""
 }
-variable "script" {
+variable "customer_data_script" {
   description = "script path"
-  default = "~/scripts/script.sh"
+  default = "/mnt/c/Users/User/Downloads/cluster/AZ.Projects/terraform/modules/scripts/script.sh"
   
 }
 variable "node_count" {
