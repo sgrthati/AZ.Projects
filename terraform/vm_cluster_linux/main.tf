@@ -5,6 +5,6 @@ module "ProjectX" {
     node_count = 2
     # lb_enabled = true
     # vm_pip_enabled = true
-    # dns_enabled = true
-    # dns_name = "Internal.com"
+    dns_enabled = true
+    dns_name = "Internal.com"
 }
