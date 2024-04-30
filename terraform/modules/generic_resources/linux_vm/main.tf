@@ -120,7 +120,7 @@ module "pr_dns_zn" {
 resource "azurerm_private_dns_a_record" "dns_record" {
   count = var.dns_enabled ==true ? var.node_count : 0
   name                =  "${local.vm_name}-${count.index + 1}"
-  zone_name           = module.pr_dns_zn.private_dns_zone_name
+  zone_name           = var.dns_name
   resource_group_name = local.resource_group_name
   ttl                 = 300
   records             = [element(azurerm_network_interface.nic.*.private_ip_address, count.index)]
