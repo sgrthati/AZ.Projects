@@ -12,6 +12,7 @@ variable "lb_enabled" {
 }
 variable "dns_enabled" {
   description = "DNS Name"
+  default = false
 }
 variable "dns_name" {
   
