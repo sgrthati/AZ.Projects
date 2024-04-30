@@ -47,7 +47,7 @@ resource "azurerm_network_interface" "nic" {
   tags = "${local.tags}"
 }
 module "lb" {
-    source = "git::https://git@github.com:sgrthati/AZ.Projects.git//terraform/modules/generic_resources/loadbalancer?ref=main"
+    source = "git::https://github.com/sgrthati/AZ.Projects.git//terraform/modules/generic_resources/loadbalancer?ref=main"
     resource_group_name = local.resource_group_name
     lb_enabled = var.lb_enabled
 }
@@ -109,7 +109,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
 }
 
 module "pr_dns_zn" {
-  source = "git::https://git@github.com:sgrthati/AZ.Projects.git//terraform/modules/generic_resources/private_dns_zone?ref=main"
+  source = "git::https://github.com/sgrthati/AZ.Projects.git//terraform/modules/generic_resources/private_dns_zone?ref=main"
   resource_group_name = var.resource_group_name
   depends_on = [ azurerm_linux_virtual_machine.vm ]
   dns_enabled = var.dns_enabled
