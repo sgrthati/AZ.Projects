@@ -6,6 +6,7 @@ variable "dns_name" {
 variable "dns_vnet_id" {
 }
 variable "dns_enabled" {
+  default = false
 }
 
 variable "tags" {
