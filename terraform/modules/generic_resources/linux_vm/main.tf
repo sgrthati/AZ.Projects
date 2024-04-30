@@ -119,7 +119,7 @@ module "pr_dns_zn" {
 
 resource "azurerm_private_dns_a_record" "dns_record" {
   count = var.dns_enabled ==true ? var.node_count : 0
-  name                =  var.dns_enabled == true ? "${local.vm_name}-${count.index + 1}" : null
+  name                =  "${local.vm_name}-${count.index + 1}"
   zone_name           = module.pr_dns_zn.private_dns_zone_name
   resource_group_name = local.resource_group_name
   ttl                 = 300
