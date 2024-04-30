@@ -13,3 +13,11 @@ variable "RG_name" {
 variable "nsg_name" {
     default = ""
 }
+
+variable "location" {
+    default = ""
+}
+
+variable "resource_group_name" {
+    default = ""
+}
