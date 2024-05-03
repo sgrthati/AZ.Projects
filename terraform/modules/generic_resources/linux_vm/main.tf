@@ -24,21 +24,21 @@ module "vnet" {
 }
 #Public IP Resource Creation
 resource "azurerm_public_ip" "pip" {
-  name                = "${local.pip_name}-${count.index + 1}"
-  count               =  var.vm_pip_enabled == true ? var.node_count : 0
+  name                = var.vm_name == "" ? "${local.pip_name}-${count.index + 1}" : "${var.vm_name}-vm-pip-${count.index + 1}"
+  count               = var.vm_pip_enabled == true ? var.node_count : 0
   location            = "${local.location}"
   resource_group_name = "${local.resource_group_name}"
   allocation_method = "Static"
 }
 #NIC Resource creation
 resource "azurerm_network_interface" "nic" {
-  name                = "${local.nic_name}-${count.index + 1}"
-  count                 = var.node_count
+  name                = var.vm_name == "" ? "${local.nic_name}-${count.index + 1}" : "${var.vm_name}-vm-nic-${count.index + 1}"
+  count               = var.node_count
   location            = "${local.location}"
   resource_group_name = "${local.resource_group_name}"
 
   ip_configuration {
-    name                          = "${local.nic_name}-${count.index + 1}-ip"
+    name                          = var.vm_name == "" ? "${local.nic_name}-${count.index + 1}-ipconfig" : "${var.vm_name}-vm-nic-${count.index + 1}-ipconfig"
     subnet_id                     = module.vnet.subnet_id
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id = var.vm_pip_enabled == true ? element(azurerm_public_ip.pip.*.id,count.index) : null
@@ -63,7 +63,7 @@ resource "azurerm_lb_backend_address_pool_address" "backend_pool_vm_assignment" 
 #VM Resource
 resource "azurerm_linux_virtual_machine" "vm" {
   count                 = var.node_count
-  name                  = "${local.vm_name}-${count.index + 1}"
+  name                  = var.vm_name == "" ? "${local.vm_name}-${count.index + 1}" : "${var.vm_name}-${count.index + 1}"
   location              = "${local.location}"
   resource_group_name   = "${local.resource_group_name}"
   computer_name         = "${local.vm_name}-${count.index + 1}"
@@ -83,7 +83,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   }
   
   os_disk {
-    name = "${format("%.22s", lower("${var.vm_name}-osdisk"))}-${count.index + 1}"
+    name = var.vm_name == "" ? "${format("%.22s", lower("${local.vm_name}-osdisk"))}-${count.index + 1}" : "${format("%.22s", lower("${var.vm_name}-osdisk"))}-${count.index + 1}"
     caching = "ReadWrite"
     storage_account_type =  var.managed_disk_type
     disk_size_gb = "${var.os_disk_size_gb != "" ? var.os_disk_size_gb : 128}"
@@ -121,7 +121,7 @@ module "pr_dns_zn" {
 #Private DNS Record Creation for VMs
 resource "azurerm_private_dns_a_record" "dns_record" {
   count = var.dns_enabled ==true ? var.node_count : 0
-  name                =  "${local.vm_name}-${count.index + 1}"
+  name                = var.vm_name == "" ? "${local.vm_name}-${count.index + 1}" : "${var.vm_name}-${count.index + 1}"
   zone_name           = var.dns_name
   resource_group_name = local.resource_group_name
   ttl                 = 300
