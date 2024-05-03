@@ -1,8 +1,8 @@
-# Azure Linux VM module
+# existing resourcegroup
 data "azurerm_resource_group" "main" {
   name = var.resource_group_name
 }
-
+#locals defined
 locals {
   resource_group_name = "${data.azurerm_resource_group.main.name}"
   location            = "${var.location != "" ? var.location : data.azurerm_resource_group.main.location}"
@@ -17,12 +17,12 @@ locals {
     var.tags
   )}"
 }
-
+#VNET module
 module "vnet" {
     source = "git::https://github.com/sgrthati/AZ.Projects.git//terraform/modules/generic_resources/vnet?ref=main"
     resource_group_name = local.resource_group_name
 }
-
+#Public IP Resource Creation
 resource "azurerm_public_ip" "pip" {
   name                = "${local.pip_name}-${count.index + 1}"
   count               =  var.vm_pip_enabled == true ? var.node_count : 0
@@ -30,7 +30,7 @@ resource "azurerm_public_ip" "pip" {
   resource_group_name = "${local.resource_group_name}"
   allocation_method = "Static"
 }
-
+#NIC Resource creation
 resource "azurerm_network_interface" "nic" {
   name                = "${local.nic_name}-${count.index + 1}"
   count                 = var.node_count
@@ -46,11 +46,13 @@ resource "azurerm_network_interface" "nic" {
 
   tags = "${local.tags}"
 }
+#Load Balancer module
 module "lb" {
     source = "git::https://github.com/sgrthati/AZ.Projects.git//terraform/modules/generic_resources/loadbalancer?ref=main"
     resource_group_name = local.resource_group_name
     lb_enabled = var.lb_enabled
 }
+#VM Association with Load balancer backend pool
 resource "azurerm_lb_backend_address_pool_address" "backend_pool_vm_assignment" {
   count = var.lb_enabled == true ? var.node_count : 0
   name                    = "${local.lb_backend_pool}-${count.index + 1}"
@@ -58,7 +60,7 @@ resource "azurerm_lb_backend_address_pool_address" "backend_pool_vm_assignment" 
   virtual_network_id      = module.vnet.vnet_id
   ip_address              = element(azurerm_network_interface.nic.*.private_ip_address, count.index)
 }
-
+#VM Resource
 resource "azurerm_linux_virtual_machine" "vm" {
   count                 = var.node_count
   name                  = "${local.vm_name}-${count.index + 1}"
@@ -107,7 +109,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
 
   tags = "${local.tags}"
 }
-
+#Private DNS Zone Module
 module "pr_dns_zn" {
   source = "git::https://github.com/sgrthati/AZ.Projects.git//terraform/modules/generic_resources/private_dns_zone?ref=main"
   resource_group_name = var.resource_group_name
@@ -116,7 +118,7 @@ module "pr_dns_zn" {
   dns_name = var.dns_enabled == true ? var.dns_name : null
   dns_vnet_id = module.vnet.vnet_id
 }
-
+#Private DNS Record Creation for VMs
 resource "azurerm_private_dns_a_record" "dns_record" {
   count = var.dns_enabled ==true ? var.node_count : 0
   name                =  "${local.vm_name}-${count.index + 1}"

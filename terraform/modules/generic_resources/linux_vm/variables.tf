@@ -47,7 +47,7 @@ variable "nic_name" {
 
 variable "vm_name" {
   description = "Name of the virtual machine."
-  default     = "linuxcomputevm"
+  default     = ""
 }
 
 variable "vm_size" {
