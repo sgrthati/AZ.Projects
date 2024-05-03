@@ -55,7 +55,7 @@ module "lb" {
 #VM Association with Load balancer backend pool
 resource "azurerm_lb_backend_address_pool_address" "backend_pool_vm_assignment" {
   count = var.lb_enabled == true ? var.node_count : 0
-  name                    = "${local.lb_backend_pool}-${count.index + 1}"
+  name                    = var.vm_name == "" ? "${local.vm_name}-${count.index + 1}" : "${var.vm_name}-${count.index + 1}"
   backend_address_pool_id = module.lb.lb_backend_pool_id
   virtual_network_id      = module.vnet.vnet_id
   ip_address              = element(azurerm_network_interface.nic.*.private_ip_address, count.index)
