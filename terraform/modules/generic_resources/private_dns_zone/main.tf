@@ -3,8 +3,8 @@ data "azurerm_resource_group" "main" {
 }
 locals {
   resource_group_name = "${data.azurerm_resource_group.main.name}"
-  dns_name = "${var.dns_name != "" ? var.dns_name : "${var.resource_group_name}-pv-dns"}"
-  dns_asc_name = "${var.resource_group_name}-pv-dns-asc"
+  dns_name = "${var.dns_name != "" ? var.dns_name : "${data.azurerm_resource_group.main.name}-pv-dns"}"
+  dns_asc_name = "${data.azurerm_resource_group.main.name}-pv-dns-asc"
   tags = "${merge(
     data.azurerm_resource_group.main.tags,
     var.tags
