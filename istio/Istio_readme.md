@@ -30,17 +30,31 @@ or
     kubectl apply -f k8s_manifests\hello_world_deployment_istio_ingress\
 
 # to enable JWT
+
 #python script will create required JWK and Tocken,public&private.pem
-#python gen_keys.py >> tokens.txt
+
+    python gen_keys.py >> tokens.txt
+
 #generated JWK,we have to replace in auth.yaml(line No,15-19)
+
     kubectl apply -f k8s_manifests\jwt\
+
 #create a variable 'token' with generated JWT
-#for istio_endpoint: 
+
+#for istio_endpoint:
+
     istio_endpoint=$(kubectl get svc -n istio-system -l app=istio-ingress -o jsonpath='{.item[0].status.loadBalancer.ingress[0].ip}')
+
 #ping: 
+
     curl -H "Authorization: Bearer $token" http://$istio_endpoint/hello
+
 # to enable logging in specified format
+
 #we have to upgrade istiod component,for that use below helm upgrade
+
     helm upgrade  istiod istio/istiod -n istio-system -f k8s_manifests/logging/logging.yaml
+
 #logs can be viewed: 
-    kubectl get logs 'kubectl logs -l app=hello_world'
+
+    kubectl get logs 'kubectl logs -l app=hello_world
