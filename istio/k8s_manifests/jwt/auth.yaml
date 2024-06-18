@@ -12,11 +12,11 @@ spec:
     jwks: |
         {
           "keys": [ 
-            { #copy generated JWK in below lines#
+            {
             "e": "AQAB",
-            "kid": "y-xkKzYdRNCMZGssrVUeTJHFpJatJaihaAE3iYFROCE",
+            "kid": "wAcHT4hyVjkuwfaymxU9Tax2bLrn-BHHKiCD-SeGGh0",
             "kty": "RSA",
-            "n": "vRKeZEQcwG-zqdn_sDyT_C4T1-TBc8IcLPFuc5FhMENyqhywPklEfj6VlTgFOnkVM2DBkfEnmtvs2aDHTejFt3m4jDcRwE4Lc3roL3QDi09xw52AhfdfK_KeL5yPyQuBds_LDnpEbI3_I0ZfkEpWAT8nv3H7-NZ3O2p4simUtEMSlu3MHdriIBWIjoxDbIvHpSeDSorpDfgDt2wC_w-fT3PDFDP724IcjwrLcnQgVa5Ir2dc7lBF9lS8WIbB8ZT15vKQQGY6XP9pP7LfabXXQhZdqU3kqpAzp5bkfwFxOum5Yk-IzvXlm8gHxjs2_un-_OC3pMPzU40vhv53JyHXIQ"
+            "n": "pRQ5EVmxASvPdMFWuyzedu99K56ShAO_735Jaywty0oefWooUTseNxsueDecR11BJTO9XTRmMxkA5BxiMxCUQ30cWmeQ3vU-XKbt82yirjOGFCQQeunVXAd2jwfQ217Mx3TXTug0nJD856yD-bzwSu_BZVlX4A7tqdT6FfDD0TmGnV6xhtJnR7B2Tu7YgP0afpyhShtC4DDpjcZj-S9nL3Fs6Htg2Lie5NhFQjklo41voc21TAQ9BZYD8-vfWtsEaTWKBSjb3ACgdHNvKhDhD9cb-SzYqZYOnUmLiJOtSezrPEWKv0O0wiSMc8oa6mDYtxH1GMvaQGIFyCmNKphiTw"
             } 
           ]
         }   

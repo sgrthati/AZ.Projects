@@ -29,13 +29,21 @@ or
 
 # to install hello_world deployment,like canary,blue-green deployment
 
-    kubectl apply -f k8s_manifests\hello_world_deployment_istio_ingress\
+    kubectl apply -f ./k8s_manifests/hello_world_deployment_istio_ingress/
+
+#this will install helloworldv1&2 along with service,virtualsvc,gateway
+
+#to access the application run below script along with no.of pings
+
+    ./k8s_manifests/ping.sh 20
+
+#in output terminal,we can see request bifurcation
 
 # to enable JWT
 
 #python script will create required JWK and Tocken,public&private.pem
 
-    python gen_keys.py >> tokens.txt
+    python k8s_manifests/jwt/gen_keys.py >> tokens.txt
 
 #generated JWK,we have to replace in auth.yaml(line No,15-19)
 
@@ -57,6 +65,6 @@ or
 
     helm upgrade  istiod istio/istiod -n istio-system -f k8s_manifests/logging/logging.yaml
 
-#logs can be viewed: 
+#logs can be viewed at after doing multiple pings to istio_endpoint: 
 
-    kubectl get logs 'kubectl logs -l app=hello_world
+    kubectl logs -l app=istio-ingress -n istio-system
