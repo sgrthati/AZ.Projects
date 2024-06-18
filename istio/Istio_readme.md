@@ -17,7 +17,9 @@
     istioctl install
 
 or
+
 #use behelm charts to install,here istio-system is namespace,where we are installing istio components
+
     helm repo add istio https://istio-release.storage.googleapis.com/charts
     helm repo update
     kubectl create namespace istio-system
