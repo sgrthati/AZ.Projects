@@ -12,13 +12,13 @@
        
     curl -L https://istio.io/downloadIstio | sh -
 
-#for windows download from here https://github.com/istio/istio/releases name convention istio-version-win.zip,extract it
+#for windows download from here https://github.com/istio/istio/releases, name convention istio-version-win.zip,extract it
   
     istioctl install
 
 or
 
-#use behelm charts to install,here istio-system is namespace,where we are installing istio components
+#use helm charts to install,here istio-system is namespace,where we are installing istio components
 
     helm repo add istio https://istio-release.storage.googleapis.com/charts
     helm repo update
@@ -27,7 +27,7 @@ or
     helm install istiod istio/istiod -n istio-system --wait
     helm install istio-ingress istio/gateway -n istio-system --wait
 
-# to install hello_worldv1&2
+# to install hello_world deployment,like canary,blue-green deployment
 
     kubectl apply -f k8s_manifests\hello_world_deployment_istio_ingress\
 
