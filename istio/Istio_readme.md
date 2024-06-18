@@ -1,3 +1,12 @@
+# to provision AKS Cluster
+
+#inside aks_cluster,change the variable resource_group_name with exisitng resource group name
+
+    terraform apply
+
+#it will provision AKS cluster,here we are going to perform istio labs
+
+
 # to install istiod:
 #for linux and mac
        
@@ -26,8 +35,8 @@ or
     # generated JWK,we have to replace in auth.yaml(line No,15-19)
     `kubectl apply -f k8s_manifests\jwt\`
     # create a variable 'token' with generated JWT
-    # for external_ip: external_ip=$(kubectl get svc -n istio-system -l app=istio-ingress -o jsonpath='{.item[0].status.loadBalancer.ingress[0].ip}')
-    #test: curl -H "Authorization: Bearer $token" http://$external_ip/hello
+    # for istio_endpoint: istio_endpoint=$(kubectl get svc -n istio-system -l app=istio-ingress -o jsonpath='{.item[0].status.loadBalancer.ingress[0].ip}')
+    #test: curl -H "Authorization: Bearer $token" http://$istio_endpoint/hello
 # to enable logging in specified format
     # we have to upgrade istiod component,for that use below helm upgrade
     # helm upgrade  istiod istio/istiod -n istio-system -f k8s_manifests/logging/logging.yaml
