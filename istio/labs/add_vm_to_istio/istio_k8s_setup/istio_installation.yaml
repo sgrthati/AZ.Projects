@@ -1,0 +1,26 @@
+apiVersion: install.istio.io/v1alpha1
+metadata:
+  name: istio-controlplane
+  namespace: istio-system
+kind: IstioOperator
+spec:
+  # profile: demo
+  components:
+    egressGateways:
+    - name: istio-egressgateway
+      enabled: false
+  meshConfig:
+    defaultConfig:
+      proxyMetadata:
+        ISTIO_META_DNS_CAPTURE: "true" #to capture DNS Queries
+  values:
+    pilot:
+      env:
+        PILOT_ENABLE_WORKLOAD_ENTRY_AUTOREGISTRATION: true #to auto-register VM Workloads
+        PILOT_ENABLE_WORKLOAD_ENTRY_HEALTHCHECKS: true #to check VM Workload healthchecks
+    global:
+      meshID: vmmesh
+      jwtPolicy: first-party-jwt # to use first party JWT
+      multiCluster: # vm was deployed in other network,so we have to define culstername and network for vm recognization
+        clusterName: "sri-aks-cluster" #clustername
+      network: "k8s-network" #cluster network

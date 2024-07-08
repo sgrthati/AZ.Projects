@@ -6,3 +6,4 @@
 **/.terraform.tfstate.lock.info
 **/.ssh/known_hosts
 **/.terraform.lock.hcl
+**/istio_addons/

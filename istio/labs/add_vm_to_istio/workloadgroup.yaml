@@ -1,0 +1,21 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: WorkloadGroup
+metadata:
+  name: "vm-apps"
+  namespace: "vm-workloads"
+spec:
+  metadata:
+    labels:
+      app: "vm_app"
+  template:
+    ports:
+      http: 5000
+    serviceAccount: "vm-svc-account"
+    network: "vm-network"
+  probe:
+    periodSeconds: 5
+    initialDelaySeconds: 1
+    httpGet:
+      port: 5000
+      host: 127.0.0.1
+      path: /hello
