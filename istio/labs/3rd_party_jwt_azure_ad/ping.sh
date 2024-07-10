@@ -1,16 +1,47 @@
 # script used for to ping multiple times
 # script.sh <no.of pings>
 # EX: ./script.sh 10
-#for fetch token with azure ad user:TOKEN=$(az account get-access-token --resource=https://management.azure.com/ --query accessToken --output tsv)
-#read the variables
-read -p "Please enter the TENANT_ID: " TENANT_ID
-read -p "Please enter the CLIENT_ID: " CLIENT_ID
-read -p "Please enter the CLIENT_SECRET: " CLIENT_SECRET
-read -p "Please enter the INGRESS_IP: " istio_endpoint
-RESOURCE="https://management.azure.com/"
-# Get JWT Token
-TOKEN=$(curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" -d "grant_type=client_credentials&client_id=$CLIENT_ID&client_secret=$CLIENT_SECRET&resource=$RESOURCE" https://login.microsoftonline.com/$TENANT_ID/oauth2/token | jq -r '.access_token')
+check_azure_login() {
+    if ! az account show &> /dev/null; then
+        echo "You are not logged in to Azure. Please log in."
+        az login
+    fi
+}
+# Function to fetch token using Azure AD
+fetch_token_azure_ad() {
+    TOKEN=$(az account get-access-token --resource=$RESOURCE --query accessToken --output tsv)
+}
+# Function to fetch token using Service Principal
+fetch_token_service_principal() {
+    #read the variables
+    read -p "Please enter the TENANT_ID: " TENANT_ID
+    read -p "Please enter the CLIENT_ID: " CLIENT_ID
+    read -p "Please enter the CLIENT_SECRET: " CLIENT_SECRET
+    read -p "Please enter the INGRESS_IP: " istio_endpoint
+    RESOURCE="https://management.azure.com/"
+    # Get JWT Token
+    TOKEN=$(curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" -d "grant_type=client_credentials&client_id=$CLIENT_ID&client_secret=$CLIENT_SECRET&resource=$RESOURCE" https://login.microsoftonline.com/$TENANT_ID/oauth2/token | jq -r '.access_token')
+}
 
+# Prompt user to choose authentication method
+echo "Choose authentication method:"
+echo "1) Azure AD"
+echo "2) Service Principal"
+read -p "Enter choice [1 or 2]: " choice
+
+case $choice in
+    1)
+        check_azure_login
+        TOKEN=$(fetch_token_azure_ad)
+        ;;
+    2)
+        TOKEN=$(fetch_token_service_principal)
+        ;;
+    *)
+        echo "Invalid choice"
+        exit 1
+        ;;
+esac
 # Number of requests to send
 NUM_REQUESTS=$1
 
