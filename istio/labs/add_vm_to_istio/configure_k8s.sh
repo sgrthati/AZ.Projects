@@ -22,19 +22,7 @@ SERVICE_ACCOUNT="vm-svc-account"
 ISTIO_VM_CONFIG_DIR="vm_workload_config/"
 CLUSTER="sri-aks-cluster"
 PRIVATE_KEY="/mnt/c/Users/User/Downloads/cluster/AZ.Projects/istio/vm_aks_mesh_infra/keys/private_key"
-FILES_TO_DELETE=("vm_workload_config/cluster.env" "vm_workload_config/hosts" "vm_workload_config/istio-token" "vm_workload_config/mesh.yaml" "vm_workload_config/root-cert.pem")
-#Delete pre existing VM_istio_config files
-for file in "${FILES_TO_DELETE[@]}"; do
-    # Check if the file exists
-    if [ -e "$file" ]; then
-        echo "Deleting $file..."
-        # Perform the deletion
-        rm "$file"
-        echo "$file deleted."
-    else
-        echo "$file does not exist. Skipping deletion."
-    fi
-done
+
 # Check if istioctl is installed
 if ! command -v istioctl &> /dev/null
 then
@@ -54,17 +42,17 @@ fi
 
 #create a namespace for istio-system
 if ! kubectl create namespace istio-system; then 
- echo "Namespace istio-system already exists, skipping creation."
- fi
+    echo "Namespace istio-system already exists, skipping creation."
+    fi
 if ! kubectl label namespace istio-system topology.istio.io/network=k8s-network; then
- echo "Namespace label already applied, skipping."
- fi
+    echo "Namespace label already applied, skipping."
+    fi
 
 #install istio in cluster along with required values
-istioctl  install -y -f ./istio_k8s_setup/istio_installation.yaml
+istioctl install -y -f ./istio_k8s_setup/istio_installation.yaml
 
 #install istio_east_west_gw to allow traffic from VM workloads
-istioctl  install -y -f ./istio_k8s_setup/istio_east_west_gw.yaml
+istioctl install -y -f ./istio_k8s_setup/istio_east_west_gw.yaml
 
 #to expose istiod services to outside
 if ! kubectl apply -n istio-system -f expose/ ; then

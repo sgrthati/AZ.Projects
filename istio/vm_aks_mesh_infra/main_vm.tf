@@ -9,4 +9,5 @@ module "ProjectX" {
     dns_enabled = false
     dns_name = "internal.com"
     vm_os_sku = "18.04-LTS"
+    allowed_inbound_ports = var.allowed_inbound_ports
 }

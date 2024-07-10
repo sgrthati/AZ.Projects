@@ -4,20 +4,31 @@ metadata:
   namespace: istio-system
 kind: IstioOperator
 spec:
-  # profile: demo
+  profile: minimal
   components:
-    egressGateways:
-    - name: istio-egressgateway
-      enabled: false
+    ingressGateways:
+    - name: istio-ingressgateway
+      enabled: true
+      label:
+        # Set a unique label for the gateway. This is required to ensure Gateways
+        # can select this workload
+        istio: ingressgateway
   meshConfig:
+    accessLogFile: /dev/stdout
+    accessLogEncoding: JSON
     defaultConfig:
       proxyMetadata:
         ISTIO_META_DNS_CAPTURE: "true" #to capture DNS Queries
+        ISTIO_META_DNS_AUTO_ALLOCATE: "true" #enable automatic Address allocation
   values:
     pilot:
       env:
         PILOT_ENABLE_WORKLOAD_ENTRY_AUTOREGISTRATION: true #to auto-register VM Workloads
         PILOT_ENABLE_WORKLOAD_ENTRY_HEALTHCHECKS: true #to check VM Workload healthchecks
+    gateways:
+      istio-ingressgateway:
+        # Enable gateway injection
+        injectionTemplate: gateway
     global:
       meshID: vmmesh
       jwtPolicy: first-party-jwt # to use first party JWT

@@ -7,3 +7,4 @@
 **/.ssh/known_hosts
 **/.terraform.lock.hcl
 **/istio_addons/
+**/vm_workload_config/

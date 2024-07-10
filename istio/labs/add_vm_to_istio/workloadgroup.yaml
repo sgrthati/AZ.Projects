@@ -1,18 +1,21 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: WorkloadGroup
 metadata:
-  name: "vm-apps"
+  name: "vm-apps-wg"
   namespace: "vm-workloads"
 spec:
   metadata:
+    annotations: {}
     labels:
-      app: "vm_app"
+      app: vm_app
   template:
     ports:
       http: 5000
     serviceAccount: "vm-svc-account"
     network: "vm-network"
-  probe:
+    labels:
+      app: vm_app
+  probe: #health checks for VM_Workloads
     periodSeconds: 5
     initialDelaySeconds: 1
     httpGet:

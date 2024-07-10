@@ -25,7 +25,7 @@ or
     kubectl create namespace istio-system
     helm install istio-base istio/base -n istio-system --set defaultRevision=default
     helm install istiod istio/istiod -n istio-system --wait
-    helm install istio-ingress istio/gateway -n istio-system --wait
+    helm install istio-ingressgateway istio/gateway -n istio-system --wait
 
 # to install hello_world deployment,like canary,blue-green deployment
 

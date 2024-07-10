@@ -1,0 +1,12 @@
+apiVersion: security.istio.io/v1
+kind: RequestAuthentication
+metadata:
+  name: "azure-jwt"
+  namespace: learning
+spec:
+  selector:
+    matchLabels:
+      app: helloworld
+  jwtRules:
+  - issuer: "https://sts.windows.net/4fe7c45d-c92c-4263-8b48-3789c3963653/"
+    jwksUri: "https://login.microsoftonline.com/4fe7c45d-c92c-4263-8b48-3789c3963653/discovery/v2.0/keys"
