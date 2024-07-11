@@ -55,7 +55,7 @@ istioctl install -y -f ./istio_k8s_setup/istio_installation.yaml
 istioctl install -y -f ./istio_k8s_setup/istio_east_west_gw.yaml
 
 #to expose istiod services to outside
-if ! kubectl apply -n istio-system -f expose/ ; then
+if ! kubectl apply -n istio-system -f ./istio_k8s_setup/expose/ ; then
     echo "istiod service already exposed"
     fi
 #Create the namespace that will host the virtual machine
@@ -68,11 +68,11 @@ if ! kubectl create serviceaccount "${SERVICE_ACCOUNT}" -n "${VM_NAMESPACE}"; th
     echo ""${SERVICE_ACCOUNT}" already create"
     fi
 #create a workload group for adding vms to istio
-if ! kubectl apply -f workloadgroup.yaml; then
+if ! kubectl apply -f ./istio_k8s_setup/workloadgroup.yaml; then
     echo "workload group already created"
     fi
 #for istio_vm_config we have to pass workload group template to istioctl
-istioctl x workload entry configure -f workloadgroup.yaml --name "${SERVICE_ACCOUNT}" --clusterID "${CLUSTER}" --externalIP "${VM_PUBLIC_IP}" --autoregister -o "${ISTIO_VM_CONFIG_DIR}"
+istioctl x workload entry configure -f ./istio_k8s_setup/workloadgroup.yaml --name "${SERVICE_ACCOUNT}" --clusterID "${CLUSTER}" --externalIP "${VM_PUBLIC_IP}" --autoregister -o "${ISTIO_VM_CONFIG_DIR}"
 
 #moving generated config to VM
 sudo scp -i "${PRIVATE_KEY}" vm_workload_config/* linuxadmin@"${VM_PUBLIC_IP}":/tmp/

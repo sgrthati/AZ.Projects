@@ -1,0 +1,29 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: "azure-jwt-authpolicy"
+  namespace: learning
+spec:
+  selector:
+    matchLabels:
+      app: helloworld
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        requestPrincipals: ["*"]
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: "azure-jwt-authpolicy"
+  namespace: vm-workloads
+spec:
+  selector:
+    matchLabels:
+      app: vm_app
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        requestPrincipals: ["*"]
