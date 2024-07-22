@@ -1,0 +1,36 @@
+# istiod values
+global:
+  meshID: vmmesh
+  jwtPolicy: first-party-jwt
+  multiCluster:
+    clusterName: sri-aks-cluster
+  network: k8s-network
+#default istio_ingress Values
+components:
+  ingressGateways:
+    - name: istio-ingressgateway
+      enabled: true
+      label:
+        istio: ingressgateway
+# #ingressGateway with internalIp
+# service:
+#   annotations: {
+#     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+#   }
+#for istio observabilty(Logging)
+meshConfig:
+  accessLogFile: /dev/stdout
+  accessLogEncoding: JSON
+  defaultConfig:
+    proxyMetadata:
+      ISTIO_META_DNS_CAPTURE: "true"
+      ISTIO_META_DNS_AUTO_ALLOCATE: "true"
+
+values:
+  pilot:
+    env:
+      PILOT_ENABLE_WORKLOAD_ENTRY_AUTOREGISTRATION: true
+      PILOT_ENABLE_WORKLOAD_ENTRY_HEALTHCHECKS: true
+  gateways:
+    istio-ingressgateway:
+      injectionTemplate: gateway

@@ -12,3 +12,6 @@
 **/hosts
 **/mesh.yaml
 **/root-cert.pem
+**/cert_venv
+**/vm_workload_config
+**/.vscode

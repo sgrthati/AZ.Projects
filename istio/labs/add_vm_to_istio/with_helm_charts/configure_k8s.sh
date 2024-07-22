@@ -1,4 +1,14 @@
 #!/bin/bash
+# Check if the vm_workload_config does not exist
+DIR=vm_workload_config
+if [ ! -d "$DIR" ]; then
+  # Create the directory
+  mkdir -p "$DIR"
+  cp istio_k8s_setup/bootstrap_vm.sh "$DIR"
+  echo "Directory created: $DIR"
+else
+  echo "Directory already exists: $DIR"
+fi
 #Delete pre existing VM_istio_config files
 FILES_TO_DELETE=("vm_workload_config/cluster.env" "vm_workload_config/hosts" "vm_workload_config/istio-token" "vm_workload_config/mesh.yaml" "vm_workload_config/root-cert.pem")
 for file in "${FILES_TO_DELETE[@]}"; do
@@ -16,13 +26,11 @@ set -euxo pipefail
 #read the vm_public_ip
 read -p "Please enter the public IP: " VM_PUBLIC_IP
 #variables
-CTX_CLUSTER1="sri-aks-cluster-admin"
 VM_NAMESPACE="vm-workloads"
 SERVICE_ACCOUNT="vm-svc-account"
 ISTIO_VM_CONFIG_DIR="vm_workload_config/"
 CLUSTER="sri-aks-cluster"
 PRIVATE_KEY="/mnt/c/Users/User/Downloads/cluster/AZ.Projects/istio/vm_aks_mesh_infra/keys/private_key"
-
 # Check if istioctl is installed
 if ! command -v istioctl &> /dev/null
 then
@@ -39,7 +47,7 @@ then
 else
     echo "istioctl is already installed."
 fi
-
+#create a namespace for istio-system and will install required components along with east west gw
 #create a namespace for istio-system
 if ! kubectl create namespace istio-system; then 
     echo "Namespace istio-system already exists, skipping creation."
@@ -48,11 +56,12 @@ if ! kubectl label namespace istio-system topology.istio.io/network=k8s-network;
     echo "Namespace label already applied, skipping."
     fi
 
-#install istio in cluster along with required values
-istioctl install -y -f ./istio_k8s_setup/istio_installation.yaml
-
-#install istio_east_west_gw to allow traffic from VM workloads
-istioctl install -y -f ./istio_k8s_setup/istio_east_west_gw.yaml
+helm repo add istio https://istio-release.storage.googleapis.com/charts
+helm repo update
+helm upgrade --install istio-base istio/base -n istio-system --create-namespace
+helm upgrade --install istiod istio/istiod -n istio-system -f ./istio_k8s_setup/istio_installation.yaml
+helm upgrade --install istio-ingressgateway istio/gateway -n istio-system -f ./istio_k8s_setup/istio_installation.yaml
+helm upgrade --install istio-eastwestgateway istio/gateway -n istio-system -f ./istio_k8s_setup/istio_east_west_gw.yaml
 
 #to expose istiod services to outside
 if ! kubectl apply -n istio-system -f ./istio_k8s_setup/expose/ ; then
@@ -65,14 +74,19 @@ if ! kubectl create namespace "${VM_NAMESPACE}"; then
 
 #Create a serviceaccount for the virtual machine
 if ! kubectl create serviceaccount "${SERVICE_ACCOUNT}" -n "${VM_NAMESPACE}"; then
-    echo ""${SERVICE_ACCOUNT}" already create"
+    echo ""${SERVICE_ACCOUNT}" already created"
     fi
 #create a workload group for adding vms to istio
 if ! kubectl apply -f ./istio_k8s_setup/workloadgroup.yaml; then
     echo "workload group already created"
     fi
 #for istio_vm_config we have to pass workload group template to istioctl
-istioctl x workload entry configure -f ./istio_k8s_setup/workloadgroup.yaml --name "${SERVICE_ACCOUNT}" --clusterID "${CLUSTER}" --externalIP "${VM_PUBLIC_IP}" --autoregister -o "${ISTIO_VM_CONFIG_DIR}"
+istioctl x workload entry configure -f ./istio_k8s_setup/workloadgroup.yaml \
+    --name "${SERVICE_ACCOUNT}" \
+    --clusterID "${CLUSTER}" \
+    --externalIP "${VM_PUBLIC_IP}" \
+    --autoregister \
+    -o "${ISTIO_VM_CONFIG_DIR}"
 
 #moving generated config to VM
 sudo scp -i "${PRIVATE_KEY}" vm_workload_config/* linuxadmin@"${VM_PUBLIC_IP}":/tmp/
