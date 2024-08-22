@@ -6,7 +6,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: helloworld
+      app: helloworld #update lables
   action: ALLOW
   rules:
   - from:

@@ -12,7 +12,7 @@ domainName="srisri.shop"
 emailAddress="admin@srisri.shop"
 Build_SourcesDirectory="$(pwd)"
 subscriptionID="$(az account show | jq -r .id)"
-$clientSecret="secret"
+clientSecret="secret"
 #azure dns provisioned resource group
 resourceGroups="DNS" 
 
@@ -73,14 +73,18 @@ certbot certonly --authenticator dns-azure \
     --email $emailAddress
 #copying generated certs to Certs Location
 cd $Build_SourcesDirectory/
-mkdir generated_certs
+if ! mkdir generated_certs &> /dev/null; then
+    echo "generated_certs already exist removing existing files"
+    rm -rf $Build_SourcesDirectory/generated_certs/*
+fi
 cp -r $Build_SourcesDirectory/cert_venv/letsencrypt/archive/srisri.shop/* $Build_SourcesDirectory/generated_certs/
-
+cp -r $Build_SourcesDirectory/cert_venv/letsencrypt/archive/srisri.shop/fullchain*.pem $Build_SourcesDirectory/generated_certs/public.crt
+cp -r $Build_SourcesDirectory/cert_venv/letsencrypt/archive/srisri.shop/privkey*.pem $Build_SourcesDirectory/generated_certs/private.key
 #Removing Certbot generated logs etc,we can uncomment it if we wanted to see logs
 certbot delete --cert-name $domainName
 rm -rf $Build_SourcesDirectory/cert_venv/
 
-Convert Certificates to PFX
+#Convert Certificates to PFX
 openssl pkcs12 -export \
     -out $Build_SourcesDirectory/generated_certs/certificate.pfx \
     -inkey $Build_SourcesDirectory/generated_certs/privkey*.pem \
