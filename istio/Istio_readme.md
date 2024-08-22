@@ -150,6 +150,16 @@ Create a secret using the following command:
 
 ##   Adding VM Workload to Istio
 
+#for these lab we have to provision AKS Cluster and VM,and i ceated them in 2 different networks
+
+#to provision VM and AKS Cluster
+
+    cd istio/vm_aks_mesh_infra/
+    terraform init
+    terraform apply
+
+#to configure k8s
+
     cd ./labs/add_vm_to_istio/with_istio_binary/
     ./configure_k8s.sh
 
