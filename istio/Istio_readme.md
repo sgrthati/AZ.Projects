@@ -95,20 +95,20 @@ or
     
     Usage:
     What the script does:
-        Checks Azure login
-        Asks for authentication method (Azure AD or Service Principal)
-        Gets authentication token
-        Sends multiple requests to Azure endpoint
-        Prints response content and code
+        - Checks Azure login
+        - Asks for authentication method (Azure AD or Service Principal)
+        - Gets authentication token
+        - Sends multiple requests to Azure endpoint
+        - Prints response content and code
         
     How to use the script:
-        Save the script to a file (e.g. azure_request.sh)
-        Make the script executable (chmod +x azure_request.sh)
-        Run the script (./azure_request.sh)
-        Choose authentication method
-        Enter authentication details (if Service Principal)
-        Specify number of requests ./azure_request.sh 10
-        Review the output
+        - Save the script to a file (e.g. azure_request.sh)
+        - Make the script executable (chmod +x azure_request.sh)
+        - Run the script (./azure_request.sh)
+        - Choose authentication method
+        - Enter authentication details (if Service Principal)
+        - Specify number of requests ./azure_request.sh 10
+        - Review the output
 
 ##   secured istio gateway
 #to enable TLS in istio gateway
@@ -144,7 +144,8 @@ Create a secret using the following command:
 #4. update A Record in DNS Zone with Ingress Public Ip
 
 #5. Verify
-#Verify that the gateway is now secured by running the following command:
+
+#Verify that the gateway is now secured by running the following URI in Browser:
     
      https://<hostname>/hello
 
@@ -186,6 +187,6 @@ Create a secret using the following command:
 
     ./ping.sh
 
-will connect on istio ingress endpoint and will able to access installed app in k8s and VM,but installed app in VM won't be accessible using VM PublicIP,because we installed PeerAuthetication manifest
+#will connect on istio ingress endpoint and will able to access installed app in k8s and VM,but installed app in VM won't be accessible using VM PublicIP,because we installed PeerAuthetication manifest
 
-#same way you can perform using helm_charts(./istio/labs/add_vm_to_istio/with_hlem_charts)
+#same way you can perform using helm_charts`(./istio/labs/add_vm_to_istio/with_hlem_charts)`
