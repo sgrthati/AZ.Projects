@@ -1,0 +1,41 @@
+#ingress compnents installation through helm
+# helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+# helm repo update
+# helm install ingress-nginx ingress-nginx/ingress-nginx \
+#     --version 4.7.1 \
+#     --namespace ingress-basic \
+#     --create-namespace \
+#     --set controller.replicaCount=2 \
+#     --set controller.nodeSelector."kubernetes\.io/os"=linux \
+#     --set controller.admissionWebhooks.patch.nodeSelector."kubernetes\.io/os"=linux \
+#     --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz \
+#     --set controller.service.externalTrafficPolicy=Local \
+#     --set defaultBackend.nodeSelector."kubernetes\.io/os"=linux
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hello-world-ingress
+  namespace: learning 
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /hello #rewrite target path,because container responds on hello not on hellov1,hellov2,it will overwrite to hello
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - path: /hellov1
+        pathType: Prefix
+        backend:
+          service:
+            name: helloworld-v1 #service name of app
+            port:
+              number: 80
+      - path: /hellov2
+        pathType: Prefix
+        backend:
+          service:
+            name: helloworld-v2
+            port:
+              number: 80
+

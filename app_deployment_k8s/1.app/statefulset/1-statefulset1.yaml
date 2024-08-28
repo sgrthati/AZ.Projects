@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: helloworld-v1
+  namespace: learning
+  labels:
+    app: helloworld
+    version: v1
+spec:
+  serviceName: helloworld-v1
+  replicas: 3
+  selector:
+    matchLabels:
+      app: helloworld
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: helloworld
+        version: v1
+    spec:
+      volumes:
+        - name: pvc
+          persistentVolumeClaim:
+            claimName: azure-pvc
+        - name: cm-volume
+          configMap:
+            name: configmap
+        - name: secret-volume
+          secret:
+            secretName: secret
+      containers:
+      - name: helloworld
+        image: ghcr.io/sgrthati/hello_world:v1
+        envFrom:
+          - configMapRef:
+              name: configmap
+          - secretRef:
+              name: secret
+        volumeMounts:
+          - name: pvc
+            mountPath: /data
+          - name: cm-volume
+            mountPath: /etc/configmap
+          - name: secret-volume
+            mountPath: /etc/secret
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        livenessProbe:
+          httpGet:
+            path: /hello
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /hello
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      imagePullSecrets:
+        - name: regcred
+      restartPolicy: Always

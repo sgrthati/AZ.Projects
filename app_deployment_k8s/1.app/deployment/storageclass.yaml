@@ -1,0 +1,13 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: azure-disk
+  namespace: learning
+provisioner: kubernetes.io/azure-disk # options: kubernetes.io/azure-disk, kubernetes.io/azure-file,
+parameters:
+  skuName: Standard_LRS # options: Standard_LRS, Premium_LRS, StandardSSD_LRS
+  location: centralindia # specify your location if needed
+  storageaccounttype: Standard_LRS
+  kind: Managed # options: Managed, Unmanaged
+reclaimPolicy: Retain # options: Retain, Delete, Recycle
+volumeBindingMode: Immediate # options: Immediate, WaitForFirstConsumer

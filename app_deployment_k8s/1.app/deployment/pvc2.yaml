@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: azure-pvc2
+  namespace: learning
+spec:
+  accessModes:
+    - ReadWriteOnce #option: ReadWriteMany, ReadWriteOnce, ReadOnlyMany
+  storageClassName: azure-disk
+  resources:
+    requests:
+      storage: 1Gi

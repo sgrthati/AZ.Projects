@@ -1,0 +1,10 @@
+#configmap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap
+  namespace: learning
+data:
+  env: "dev"
+  name: "test"
+  port: "8080"
