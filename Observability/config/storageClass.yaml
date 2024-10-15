@@ -1,0 +1,12 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: azure-disk
+provisioner: kubernetes.io/azure-disk
+parameters:
+  skuName: Premium_LRS
+  kind: Managed
+  location: centralindia
+allowVolumeExpansion: true
+reclaimPolicy: Retain
+volumeBindingMode: Immediate

@@ -1,0 +1,19 @@
+groups:
+  - name: alerting_rules
+    rules:
+      - alert: KubePodNotReady
+        expr: up == 0
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "KubePodNotReady"
+          description: "KubePodNotReady"
+      - alert: crashloopfailurePerNode
+        expr: up == 0
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "crashloopfailurePerNode"
+          description: "crashloopfailurePerNode"

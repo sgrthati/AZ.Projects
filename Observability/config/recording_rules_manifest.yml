@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: recording-rules
+  namespace: prometheus
+data:
+  recording_rules.yml: |
+    groups:
+      - name: alert_group_1
+        rules:
+          - record: pod_memory_usage
+            expr: (sum by(pod) (rate(container_memory_usage_bytes{job="kubelet", pod!="", image!="", container!="POD"}[1m])) / sum by(pod) (kube_pod_owner{job="kubelet", owner=""})) * 100 > 80
+          - record: pods_per_node
+            expr: sum by (namespace) (kube_pod_info) / count(kube_node_info)
+      - name: alert_group_2
+        rules:
+          - record: cpu_idle_per_node
+            expr: sum by (namespace) (rate(node_cpu_seconds_total{mode="idle"}[1m])) / count(kube_node_info)
+            

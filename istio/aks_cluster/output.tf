@@ -11,5 +11,5 @@
 # }
 
 output "download_aks_credetials" {
-  value = "az aks get-credentials --resource-group ${var.resource_group_name} --name ${module.aks.cluster_name} --overwrite-existing --admin"
+  value = "az aks get-credentials --resource-group ${var.resource_group_name} --name ${module.aks.cluster_name} --overwrite-existing"
 }

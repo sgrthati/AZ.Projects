@@ -143,6 +143,8 @@ Create a secret using the following command:
 
 #4. update A Record in DNS Zone with Ingress Public Ip
 
+    az dns record-set a add-record -g <resource_group_name> -z <zone_name> -n <record_name> --ipv4-address <public_ip>
+
 #5. Verify
 
 #Verify that the gateway is now secured by running the following URI in Browser:

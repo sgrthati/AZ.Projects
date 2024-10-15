@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld-v1
+  namespace: learning
+  labels:
+    app: helloworld
+    version: v1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: helloworld
+      version: v1
+  strategy:
+    type: RollingUpdate #options: RollingUpdate, Recreate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: helloworld
+        version: v1
+    spec:
+      containers:
+      - name: helloworld
+        image: ghcr.io/sgrthati/hello_world:v1
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        livenessProbe:
+          httpGet:
+            path: /hello
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /hello
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      imagePullSecrets:
+        - name: regcred
+      restartPolicy: Always
+

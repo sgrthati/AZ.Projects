@@ -3,23 +3,9 @@ NAMESPACE_PROMETHEUS=prometheus
 NAMESPACE_GRAFANA=grafana
 
 set -xeuo pipefail
-#installing prometheous via helm
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm repo update
-helm upgrade --install prometheus prometheus-community/prometheus \
-  --namespace $NAMESPACE_PROMETHEUS \
-  --create-namespace
-
-#installing Grafana via helm
-helm repo add grafana https://grafana.github.io/helm-charts
-helm repo update
-helm upgrade --install grafana grafana/grafana \
-  --namespace $NAMESPACE_GRAFANA \
-  --create-namespace
-
 
 #configure prometheus to scrape metrics
-cat 3.logging/config/prometheus-values.yaml <<EOF
+cat > 3.logging/config/prometheus-values.yaml <<EOF
 namespace: $NAMESPACE_PROMETHEUS
 #to scrape the prometheus metrics
 scrape_configs:
@@ -32,13 +18,15 @@ EOF
 helm upgrade --install prometheus prometheus-community/prometheus \
     --namespace $NAMESPACE_PROMETHEUS \
     --values 3.logging/config/prometheus-values.yaml \
+    --create-namespace \
     --wait
 
 echo "Prometheus is ready"
 
-#configure prometheus data source in Grafana
+#installing Grafana via helm
 
-cat 3.logging/config/grafana-values.yaml <<EOF
+#configure prometheus data source in Grafana
+cat > 3.logging/config/grafana-values.yaml <<EOF
 namespace: $NAMESPACE_GRAFANA
 service:
   type: LoadBalancer
@@ -59,6 +47,7 @@ EOF
 
 helm upgrade --install grafana grafana/grafana \
     --namespace $NAMESPACE_GRAFANA \
+    --create-namespace \
     --values 3.logging/config/grafana-values.yaml
 
 echo "Grafana is ready"

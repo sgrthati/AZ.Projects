@@ -17,3 +17,5 @@
 **/.vscode
 **/certbot_venv
 **/generated_certs
+*.tgz
+**/helm-charts/**
