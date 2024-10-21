@@ -18,19 +18,19 @@ resource "azurerm_api_management" "apim" {
   tags                = var.tags
   public_network_access_enabled = true
   # virtual_network_type = null #possible values: None, External, Internal
-  delegation {
-    subscriptions_enabled = false #users cannot create subscriptions
-    user_registration_enabled = false #disables user registration
-  }
-  zones = null #possible values: 1, 2, 3, ["1", "2", "3"]
+  # delegation {
+  #   subscriptions_enabled = true #users cannot create subscriptions
+  #   user_registration_enabled = true #disables user registration
+  # }
+  # zones = null #possible values: 1, 2, 3, ["1", "2", "3"]
   sku_name            = "${var.apimSku}_${var.apimSkuCapacity}"
 
   identity {
     type = "SystemAssigned"
   }
-  protocols {
-    enable_http2 = false
-  }
+  # protocols {
+  #   enable_http2 = false
+  # }
   security {
     enable_backend_ssl30                                = false
     enable_backend_tls10                                = false
@@ -51,18 +51,17 @@ resource "azurerm_api_management" "apim" {
     triple_des_ciphers_enabled                          = false
   }
   sign_in {
-    enabled = false
+    enabled = true
   }
   sign_up {
-    enabled = false
+    enabled = true
     terms_of_service {
-      consent_required = false
-      enabled          = false
+      consent_required = true
+      enabled          = true
     }
   }
-  tenant_access {
-    enabled = false
-  }
-
+  # tenant_access {
+  #   enabled = true
+  # }
 
 }

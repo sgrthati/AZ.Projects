@@ -16,7 +16,14 @@ resource "azurerm_api_management_group" "group" {
   resource_group_name = azurerm_resource_group.rg.name
   api_management_name = azurerm_api_management.apim.name
   display_name        = "${var.product.productId}-group"
-  description         = "This is an example API management group."
+  description         = "${var.product.productId}-group"
+}
+#mapping product to a group
+resource "azurerm_api_management_product_group" "example" {
+  product_id          = azurerm_api_management_product.product.product_id
+  group_name          = azurerm_api_management_group.group.name
+  api_management_name = azurerm_api_management.apim.name
+  resource_group_name = azurerm_api_management.apim.resource_group_name
 }
 
 # Create Users - not available for Consumption plan
@@ -29,6 +36,7 @@ resource "azurerm_api_management_user" "user" {
   email               = var.user.email
   state               = "active"
   confirmation        = "invite"
+  password = var.user.password
 
   depends_on = [azurerm_api_management_product.product]
 }
@@ -68,6 +76,11 @@ resource "azurerm_api_management_api" "api" {
     content_format = "openapi"
     content_value  = file("./openAPI/openAPI.yaml")
   }
+  oauth2_authorization {
+    authorization_server_name = azurerm_api_management_authorization_server.apim_auth.name
+    scope                     = "api://${azuread_application.api_application.client_id}/user.read"
+  }
+
 }
 #to create API under product
 resource "azurerm_api_management_product_api" "product_api" {

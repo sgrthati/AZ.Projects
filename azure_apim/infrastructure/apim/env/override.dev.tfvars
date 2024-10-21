@@ -25,6 +25,7 @@ product = {
 user = {
     firstName = "sagar",
     email = "sagarpranith@gmail.com"
+    password = "Azure@2024"
 }
 
 subscription = {
