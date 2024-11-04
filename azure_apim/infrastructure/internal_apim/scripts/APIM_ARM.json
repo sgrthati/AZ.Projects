@@ -1,0 +1,85 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {},
+    "variables": {
+        "apim_name": "${local.apimName}",
+        "location": "${var.location}",
+        "sku_name": "${var.apim.sku_name}",
+        "sku_capacity": "${var.apim.sku_capacity}",
+        "publisherEmail": "${var.apim.publisherEmail}",
+        "publisherName": "${var.apim.publisherName}"
+    },
+    "resources": [ 
+        {
+            "type": "Microsoft.ApiManagement/service",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[variables('apim_name')]",
+            "location": "[variables('location')]",
+            "sku": {
+                "name": "[variables('sku_name')]",
+                "capacity": "[variables('sku_capacity')]"
+            },
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "publisherEmail": "[variables('publisherEmail')]",
+                "publisherName": "[variables('publisherName')]",
+                "notificationSenderEmail": "apimgmt-noreply@mail.windowsazure.com",
+                "hostnameConfigurations": [
+                    {
+                        "type": "Proxy",
+                        "hostName": "[concat(variables('apim_name'), '.azure-api.net')]",
+                        "negotiateClientCertificate": false,
+                        "defaultSslBinding": true,
+                        "certificateSource": "BuiltIn"
+                    }
+                ],
+                "customProperties": {
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls10": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls11": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Ssl30": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Ciphers.TripleDes168": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls10": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls11": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Ssl30": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Protocols.Server.Http2": "False"
+                },
+                "virtualNetworkType": "None",
+                "disableGateway": false,
+                "natGatewayState": "Unsupported",
+                "apiVersionConstraint": {},
+                "publicNetworkAccess": "Disabled",
+                "legacyPortalStatus": "Disabled",
+                "developerPortalStatus": "Enabled",
+                "privateEndpointConnections": [
+                    {
+                        "id": "[resourceId('Microsoft.ApiManagement/service/privateEndpointConnections', parameters('service_test_apim_6_name'), 'sri-pee')]",
+                        "name": "sri-pee",
+                        "type": "Microsoft.ApiManagement/service/privateEndpointConnections",
+                        "properties": {
+                            "privateEndpoint": {},
+                            "privateLinkServiceConnectionState": {
+                                "status": "Approved"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/privateEndpointConnections",
+            "apiVersion": "2023-09-01-preview",
+            "name": "[concat(variables('apim_name'), '/PrivateEndpoint')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', variables('apim_name'))]"
+            ],
+            "properties": {
+                "privateLinkServiceConnectionState": {
+                    "status": "Approved"
+                }
+            }
+        }
+    ] 
+}

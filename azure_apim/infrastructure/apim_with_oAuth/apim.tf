@@ -22,15 +22,15 @@ resource "azurerm_api_management" "apim" {
   #   subscriptions_enabled = true #users cannot create subscriptions
   #   user_registration_enabled = true #disables user registration
   # }
-  zones = null #possible values: 1, 2, 3, ["1", "2", "3"]
+  # zones = null #possible values: 1, 2, 3, ["1", "2", "3"]
   sku_name            = "${var.apimSku}_${var.apimSkuCapacity}"
 
   identity {
     type = "SystemAssigned"
   }
-  protocols {
-    enable_http2 = false
-  }
+  # protocols {
+  #   enable_http2 = false
+  # }
   security {
     enable_backend_ssl30                                = false
     enable_backend_tls10                                = false
@@ -60,4 +60,8 @@ resource "azurerm_api_management" "apim" {
       enabled          = true
     }
   }
+  # tenant_access {
+  #   enabled = true
+  # }
+
 }

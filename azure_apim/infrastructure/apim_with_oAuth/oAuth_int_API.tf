@@ -20,6 +20,15 @@ resource "azuread_application" "api_application" {
   }
 }
 
+# Add a time delay after the service principal creation
+resource "null_resource" "wait_for_sp" {
+  depends_on = [azuread_application.api_application]
+
+  provisioner "local-exec" {
+    command = "sleep 30"
+  }
+}
+
 resource "azuread_application_identifier_uri" "api_ad_uri" {
   application_id = azuread_application.api_application.id
   identifier_uri = "api://${azuread_application.api_application.client_id}"

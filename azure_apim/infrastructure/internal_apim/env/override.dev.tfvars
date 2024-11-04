@@ -1,6 +1,6 @@
-subscription_id = "549e90a6-40ca-4c76-8aa8-8f6ea2a287f4"
 location = "centralIndia"
-environment = "dev"
+prefix = "test"
+environment = "test"
 resourceFunction = "apim"
 
 tags = {
@@ -43,11 +43,9 @@ user = {
 subscription = {
     subscriptionName = "Internal"
 }
-
+subscription_id = "549e90a6-40ca-4c76-8aa8-8f6ea2a287f4"
 
 backend = {
-  required = true
-  public_ip = true
   username = "adminuser"
   password = "Cloud@20242024"
 }

@@ -9,9 +9,9 @@ variable "tags" {
 variable "backend" {
     type = map
 }
-# variable "apim" {
-#   type = map
-# }
+variable "apim" {
+  type = map
+}
 
 variable "prefix" {
     type = string

@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: JSONPlaceholder API
+  title: AWS API
   description: A free fake online REST API for testing and prototyping.
   version: 1.0.0
 servers:
@@ -20,6 +20,15 @@ paths:
                   $ref: '#/components/schemas/Post'
         '500':
           description: Internal server error
+      x-amazon-apigateway-integration:
+        uri: https://jsonplaceholder.typicode.com/posts
+        httpMethod: GET
+        type: HTTP
+        responses:
+          default:
+            statusCode: '200'
+            responseTemplates:
+              application/json: ""
     post:
       summary: Create a new post
       requestBody:
@@ -29,6 +38,10 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Post'
+            example:
+              userId: 1
+              title: "Sample Post Title"
+              body: "This is a sample post body."
       responses:
         '201':
           description: Post created successfully
@@ -36,6 +49,23 @@ paths:
           description: Bad request
         '500':
           description: Internal server error
+      x-amazon-apigateway-integration:
+        uri: https://jsonplaceholder.typicode.com/posts
+        httpMethod: POST
+        type: HTTP
+        requestTemplates:
+          application/json: |
+            {
+              "userId": "$input.path('$.userId')",
+              "title": "$input.path('$.title')",
+              "body": "$input.path('$.body')"
+            }
+        passthroughBehavior: WHEN_NO_TEMPLATES
+        responses:
+          default:
+            statusCode: '201'
+            responseTemplates:
+              application/json: ""
   /posts/{id}:
     get:
       summary: Get a post by ID
@@ -57,6 +87,17 @@ paths:
           description: Post not found
         '500':
           description: Internal server error
+      x-amazon-apigateway-integration:
+        uri: https://jsonplaceholder.typicode.com/posts/{id}
+        httpMethod: GET
+        type: HTTP
+        requestParameters:
+          integration.request.path.id: 'method.request.path.id'
+        responses:
+          default:
+            statusCode: '200'
+            responseTemplates:
+              application/json: ""
     put:
       summary: Update a post by ID
       parameters:
@@ -73,6 +114,10 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Post'
+            example:
+              userId: 1
+              title: "Updated Post Title"
+              body: "This is the updated post body."
       responses:
         '200':
           description: Post updated successfully
@@ -82,6 +127,26 @@ paths:
           description: Post not found
         '500':
           description: Internal server error
+      x-amazon-apigateway-integration:
+        uri: https://jsonplaceholder.typicode.com/posts/{id}
+        httpMethod: PUT
+        type: HTTP
+        requestParameters:
+          integration.request.path.id: 'method.request.path.id'
+        requestTemplates:
+          application/json: |
+            {
+              "userId": "$input.path('$.userId')",
+              "id": "$input.path('$.id')",
+              "title": "$input.path('$.title')",
+              "body": "$input.path('$.body')"
+            }
+        passthroughBehavior: WHEN_NO_TEMPLATES #inputs: 
+        responses:
+          default:
+            statusCode: '200'
+            responseTemplates:
+              application/json: ""
     delete:
       summary: Delete a post by ID
       parameters:
@@ -98,6 +163,17 @@ paths:
           description: Post not found
         '500':
           description: Internal server error
+      x-amazon-apigateway-integration:
+        uri: https://jsonplaceholder.typicode.com/posts/{id}
+        httpMethod: DELETE
+        type: HTTP
+        requestParameters:
+          integration.request.path.id: 'method.request.path.id'
+        responses:
+          default:
+            statusCode: '200'
+            responseTemplates:
+              application/json: ""
 components:
   schemas:
     Post:
