@@ -1,0 +1,80 @@
+API:
+  Name: # API Name Ex: Example API
+  Description: # API Description Ex: This is an example API
+  Version: # API Version Ex: 1.0.0
+Backend:
+  - https://<example-backend1>.com
+  - https://<example-backend2>.com
+Paths:
+  - Name: /path1 # Resource Name
+    ID: "testx" # Resource ID
+    Info: "it is a test API" # Resource Info
+    Operations: GET, POST, PUT, DELETE, UPDATE
+  - Name: /path2/{id} # Resource Name
+    ID: "testy" # Resource ID
+    Info: "it is a test API" # Resource Info
+    Operations: GET, POST, PUT, DELETE, UPDATE
+Security:
+  Enable_API_Key: true # Enable API key authentication
+components:
+  schemas:
+    get:
+      type: object
+      properties:
+        userId:
+          type: integer
+          description: The ID of the user who created the post
+        id:
+          type: integer
+          description: The unique ID of the post
+        title:
+          type: string
+          description: The title of the post
+        body:
+          type: string
+          description: The body content of the post
+    post:
+      type: object
+      properties:
+        userId:
+          type: integer
+          description: The ID of the user who created the post
+        id:
+          type: integer
+          description: The unique ID of the post
+        title:
+          type: string
+          description: The title of the post
+        body:
+          type: string
+          description: The body content of the post
+    put:
+      type: object
+      properties:
+        userId:
+          type: integer
+          description: The ID of the user who created the post
+        id:
+          type: integer
+          description: The unique ID of the post
+        title:
+          type: string
+          description: The title of the post
+        body:
+          type: string
+          description: The body content of the post
+    update:
+      type: object
+      properties:
+        userId:
+          type: integer
+          description: The ID of the user who created the post
+        id:
+          type: integer
+          description: The unique ID of the post
+        title:
+          type: string
+          description: The title of the post
+        body:
+          type: string
+          description: The body content of the post

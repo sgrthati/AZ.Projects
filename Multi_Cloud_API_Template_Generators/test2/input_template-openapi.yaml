@@ -1,0 +1,216 @@
+openapi: 3.0.0
+info:
+  title: null
+  description: null
+  version: null
+servers:
+- url: https://<example-backend1>.com
+- url: https://<example-backend2>.com
+paths:
+  /path1:
+    get:
+      summary: it is a test API
+      description: it is a test API
+      operationId: testx_get
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/get'
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+    post:
+      summary: it is a test API
+      description: it is a test API
+      operationId: testx_post
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/post'
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+    put:
+      summary: it is a test API
+      description: it is a test API
+      operationId: testx_put
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/put'
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+    delete:
+      summary: it is a test API
+      description: it is a test API
+      operationId: testx_delete
+      responses:
+        '200':
+          description: Created operation
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+    update:
+      summary: it is a test API
+      description: it is a test API
+      operationId: testx_update
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/update'
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+  /path2/{id}:
+    get:
+      summary: it is a test API
+      description: it is a test API
+      operationId: testy_get
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/get'
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+    post:
+      summary: it is a test API
+      description: it is a test API
+      operationId: testy_post
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/post'
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+    put:
+      summary: it is a test API
+      description: it is a test API
+      operationId: testy_put
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/put'
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+    delete:
+      summary: it is a test API
+      description: it is a test API
+      operationId: testy_delete
+      responses:
+        '200':
+          description: Created operation
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+    update:
+      summary: it is a test API
+      description: it is a test API
+      operationId: testy_update
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/update'
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+components:
+  schemas:
+    get:
+      type: object
+      properties:
+        userId:
+          type: integer
+          description: The ID of the user who created the post
+        id:
+          type: integer
+          description: The unique ID of the post
+        title:
+          type: string
+          description: The title of the post
+        body:
+          type: string
+          description: The body content of the post
+    post:
+      type: object
+      properties:
+        userId:
+          type: integer
+          description: The ID of the user who created the post
+        id:
+          type: integer
+          description: The unique ID of the post
+        title:
+          type: string
+          description: The title of the post
+        body:
+          type: string
+          description: The body content of the post
+    put:
+      type: object
+      properties:
+        userId:
+          type: integer
+          description: The ID of the user who created the post
+        id:
+          type: integer
+          description: The unique ID of the post
+        title:
+          type: string
+          description: The title of the post
+        body:
+          type: string
+          description: The body content of the post
+    update:
+      type: object
+      properties:
+        userId:
+          type: integer
+          description: The ID of the user who created the post
+        id:
+          type: integer
+          description: The unique ID of the post
+        title:
+          type: string
+          description: The title of the post
+        body:
+          type: string
+          description: The body content of the post
+  securitySchemes: {}
