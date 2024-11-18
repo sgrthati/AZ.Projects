@@ -1,7 +1,7 @@
 API:
-  Name: # API Name Ex: Example API
-  Description: # API Description Ex: This is an example API
-  Version: # API Version Ex: 1.0.0
+  Name: test # API Name Ex: Example API
+  Description: test description # API Description Ex: This is an example API
+  Version: 1.0.0 # API Version Ex: 1.0.0
 Backend:
   - https://<example-backend1>.com
   - https://<example-backend2>.com
@@ -14,6 +14,13 @@ Paths:
     ID: "testy" # Resource ID
     Info: "it is a test API" # Resource Info
     Operations: GET, POST, PUT, DELETE, UPDATE
+Quota:
+  calls: 1000
+  bandwidth: "hour"
+  renewal-period: 3600  # 1 hour in seconds
+RateLimit:
+  calls: 10
+  period: 60  # 10 requests per minute
 Security:
   Enable_API_Key: true # Enable API key authentication
 components:

@@ -2,8 +2,8 @@
 import os
 import yaml
 import argparse
-import requests
 import re
+from xml.etree.ElementTree import Element, SubElement, tostring
 
 #OpenAPI Spec Generator
 
@@ -46,7 +46,18 @@ def generate_openapi_spec_azure(input_yaml):
                 # Add the operation to the OpenAPI spec with content block
                 openapi_spec["paths"][path_name][operation] = {
                     "summary": path_info,
-                    "parameters": [], 
+                    "parameters": [
+                        {
+                            "name": placeholder,
+                            "in": "path",
+                            "required": True,
+                            "schema": {
+                                "type": "string"
+                            },
+                            "description": f"Parameter for {placeholder}"
+                        }
+                        for placeholder in placeholders
+                    ],        
                     "description": path_info,
                     "operationId": f"{path_id}_{operation}",
                     "responses": {
@@ -73,6 +84,18 @@ def generate_openapi_spec_azure(input_yaml):
                 # If schema does not exist, add the operation without content block
                 openapi_spec["paths"][path_name][operation] = {
                     "summary": path_info,
+                    "parameters": [
+                        {
+                            "name": placeholder,
+                            "in": "path",
+                            "required": True,
+                            "schema": {
+                                "type": "string"
+                            },
+                            "description": f"Parameter for {placeholder}"
+                        }
+                        for placeholder in placeholders
+                    ], 
                     "description": path_info,
                     "operationId": f"{path_id}_{operation}",
                     "responses": {
@@ -89,10 +112,57 @@ def generate_openapi_spec_azure(input_yaml):
                 }
     # Add component schemas if they exist in the input YAML
     return openapi_spec
-def write_openapi_spec_to_file(spec, output_file):
-    os.makedirs(os.path.dirname(output_file), exist_ok=True)  # Create output folder if it doesn't exist
-    with open(output_file, 'w') as f:
+def write_openapi_spec_to_file(spec, azure_openspc_output_file):
+    os.makedirs(os.path.dirname(azure_openspc_output_file), exist_ok=True)  # Create output folder if it doesn't exist
+    with open(azure_openspc_output_file, 'w') as f:
         yaml.dump(spec, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
+
+#Azure API Policy Generator
+def generate_backend_policy(input_yaml):
+    # Initialize the root <inbound> policy element
+    policy_root = Element('policies')
+
+    # Create the <inbound> section for the backend policy
+    inbound_policy = SubElement(policy_root, 'inbound')
+
+    # Check if 'Backend' URLs are provided in the input YAML
+    if 'Backend' in input_yaml:
+        backend_urls = input_yaml['Backend']
+        for url in backend_urls:
+            # Apply the set-backend-service policy for each backend URL
+            set_backend_service = SubElement(inbound_policy, 'set-backend-service')
+            set_backend_service.set('base-url', f"{url}")
+            # Optionally, you can add headers or other authentication methods
+            # set_backend_service.set('authentication', 'Basic')
+            # set_backend_service.set('username', 'username')
+            # set_backend_service.set('password', 'password')
+
+    else:
+        # If no backend URL is provided, apply a default one
+        set_backend_service = SubElement(inbound_policy, 'set-backend-service')
+        set_backend_service.set('base-url', 'https://default-backend.com')
+     # Add Quota policy if defined in YAML
+    if 'Quota' in input_yaml:
+        quota_policy = SubElement(inbound_policy, 'quota')
+        quota_policy.set('calls', str(input_yaml['Quota']['calls']))  # Max number of calls
+        quota_policy.set('bandwidth', input_yaml['Quota']['bandwidth'])  # Interval for the quota (e.g., "minute", "hour")
+        quota_policy.set('renewal-period', str(input_yaml['Quota']['renewal-period']))  # Time window for the quota in seconds
+
+    # Add Rate Limit policy if defined in YAML
+    if 'RateLimit' in input_yaml:
+        rate_limit_policy = SubElement(inbound_policy, 'rate-limit-by-key')
+        rate_limit_policy.set('calls', str(input_yaml['RateLimit']['calls'])) 
+        rate_limit_policy.set('renewal-period', str(input_yaml['RateLimit']['period']))
+        rate_limit_policy.set('increment-condition', "@(context.Response.StatusCode == 200)")
+        rate_limit_policy.set('counter-key', "@(context.request.key)")
+    # Convert the XML tree to string for output
+    return tostring(policy_root, encoding='unicode', method='xml')
+
+# Function to write the generated policy to an XML file
+def write_backend_policy_to_file(policy, apim_policy):
+    os.makedirs(os.path.dirname(apim_policy), exist_ok=True)  # Create output folder if it doesn't exist
+    with open(apim_policy, 'w') as f:
+        f.write(policy)
 
 def main():
     # Set up argument parsing
@@ -109,18 +179,24 @@ def main():
 
     with open(args.input_file, 'r') as f:
         input_yaml = yaml.safe_load(f)
-
+    #Create a Folder    
+    Azure_Dir = os.path.join(args.output_folder, "Azure")
     # Generate OpenAPI Spec
     openapi_spec = generate_openapi_spec_azure(input_yaml)
 
     # Generate output file path
-    input_filename = os.path.basename(args.input_file)
-    output_filename = input_filename.replace('.yaml', '-openapi.yaml')  # Create output filename
-    output_file = os.path.join(args.output_folder, output_filename)
+    output_filename = f"{input_yaml['API']['Name']}-OpenAPI-Azure.yaml" # Create output filename
+    azure_openspc_output_file = os.path.join(Azure_Dir, output_filename)
 
     # Write the OpenAPI spec to the output file
-    write_openapi_spec_to_file(openapi_spec, output_file)
-    print(f"OpenAPI specification has been generated and saved to {output_file}")
+    write_openapi_spec_to_file(openapi_spec, azure_openspc_output_file)
+    print(f"OpenAPI specification has been generated and saved to {azure_openspc_output_file}")
+    
+    # Generate Azure API Policy
+    policy = generate_backend_policy(input_yaml)
+    apim_policy = os.path.join(Azure_Dir, f"{input_yaml['API']['Name']}api-policy-Azure.xml")
+    write_backend_policy_to_file(policy, apim_policy)
+    print(f"API Policy has been generated and saved to {apim_policy}")
 
 if __name__ == '__main__':
     main()
