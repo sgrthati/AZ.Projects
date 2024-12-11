@@ -8,13 +8,13 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # Set environment variables with defaults if not already set
-domainName="srisri.shop"
-emailAddress="admin@srisri.shop"
+domainName="srisri.xyz"
+emailAddress="admin@srisri.xyz"
 Build_SourcesDirectory="$(pwd)"
 subscriptionID="$(az account show | jq -r .id)"
 clientSecret="secret"
 #azure dns provisioned resource group
-resourceGroups="DNS" 
+resourceGroups="NetworkWatcherRG" 
 
 # Setup Environment
 echo "Installing Azure CLI and Certbot..."

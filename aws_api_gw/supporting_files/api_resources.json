@@ -1,0 +1,21 @@
+[
+  {
+    "id": "a9w6kn",
+    "parentId": "bw6b22",
+    "pathPart": "{id}",
+    "path": "/posts/{id}",
+    "resourceMethods": {
+      "GET": {}
+    }
+  },
+  {
+    "id": "bw6b22",
+    "parentId": "smej2swyz4",
+    "pathPart": "posts",
+    "path": "/posts",
+    "resourceMethods": {
+      "DELETE": {},
+      "GET": {}
+    }
+  }
+]

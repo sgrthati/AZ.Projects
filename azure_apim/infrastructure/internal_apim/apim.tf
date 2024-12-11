@@ -19,10 +19,6 @@ resource "azurerm_api_management" "apim" {
   publisher_email     = var.apimPublisherEmail
   tags                = var.tags
   # public_network_access_enabled = false #for internal APIM
-  delegation {
-    user_registration_enabled = true
-    subscriptions_enabled     = true
-  }
   # virtual_network_type = "None"
   # virtual_network_configuration {
   #   subnet_id = azurerm_subnet.gatewaySubnet.id
@@ -66,7 +62,6 @@ resource "azurerm_api_management" "apim" {
   }
 }
 
-
 resource "azurerm_private_endpoint" "pe" {
   name                = "${local.apimName}-pe"
   location            = azurerm_resource_group.rg.location
@@ -85,10 +80,11 @@ resource "azurerm_private_endpoint" "pe" {
 #disable public network access in apim
 resource "azapi_update_resource" "disable_public_network_access" {
   type = "Microsoft.ApiManagement/service@2021-08-01"
-  name = azurerm_api_management.apim.name
-  body = jsonencode({
+  resource_id = azurerm_api_management.apim.id
+  depends_on = [ azurerm_private_endpoint.pe ]
+  body = {
     properties = {
       publicNetworkAccess = "Disabled"
     }
-  }) 
+  }
 }
