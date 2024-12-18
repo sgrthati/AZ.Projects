@@ -23,7 +23,7 @@ resource "aws_api_gateway_integration" "get_integration" {
   resource_id             = each.value.resource_id
   http_method             = each.value.http_method
   integration_http_method = each.value.http_method
-  passthrough_behavior = "WHEN_NO_MATCH"
+  passthrough_behavior    = "WHEN_NO_MATCH"
   type                    = "HTTP"
   uri                     = "${local.URL}${each.value.path}"
   request_templates = {
@@ -47,15 +47,35 @@ resource "aws_api_gateway_integration_response" "MyDemoIntegrationResponse" {
   response_templates = {
     "application/json" = ""
   }
+  depends_on = [ aws_api_gateway_integration.get_integration ]
 }
-#to enable API-key for each method
+# #to enable API-key for each method
+# resource "null_resource" "enable_api_key" {
+#   for_each = { for idx, item in local.flattened_resources : 
+#     "${item.resource_id}_${item.http_method}" => item 
+#   }
+#   provisioner "local-exec" {
+#     interpreter = ["/bin/bash", "-c"]
+#     command = "./supporting_files/update-aws-auth.sh ${var.rest_api_id} ${each.value.resource_id} ${each.value.http_method} true"
+#   }
+#   depends_on = [ aws_api_gateway_integration.get_integration ]
+# }
+
 resource "null_resource" "enable_api_key" {
   for_each = { for idx, item in local.flattened_resources : 
     "${item.resource_id}_${item.http_method}" => item 
   }
   provisioner "local-exec" {
     interpreter = ["/bin/bash", "-c"]
-    command = "./supporting_files/update-aws-auth.sh ${var.rest_api_id} ${each.value.resource_id} ${each.value.http_method} true"
+    command = <<-EOT
+    curl -X PATCH "https://apigateway.${var.region}.amazonaws.com/restapis/${var.rest_api_id}/resources/${each.value.resource_id}/methods/${each.value.http_method}" \
+    -H "Content-Type: application/json" \
+    -H "X-Amz-Date: 20160613T215008Z" \
+    -H "Authorization: AWS4-HMAC-SHA256 Credential=your-access-key/20160613/us-east-1/apigateway/aws4_request, SignedHeaders=content-type;host;x-amz-date, Signature=your-calculated-signature"
+    -D 
+    EOT
   }
   depends_on = [ aws_api_gateway_integration.get_integration ]
+
+  
 }

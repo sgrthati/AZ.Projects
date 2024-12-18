@@ -77,12 +77,9 @@ if ! mkdir generated_certs &> /dev/null; then
     echo "generated_certs already exist removing existing files"
     rm -rf $Build_SourcesDirectory/generated_certs/*
 fi
-cp -r $Build_SourcesDirectory/cert_venv/letsencrypt/archive/srisri.shop/* $Build_SourcesDirectory/generated_certs/
-cp -r $Build_SourcesDirectory/cert_venv/letsencrypt/archive/srisri.shop/fullchain*.pem $Build_SourcesDirectory/generated_certs/public.crt
-cp -r $Build_SourcesDirectory/cert_venv/letsencrypt/archive/srisri.shop/privkey*.pem $Build_SourcesDirectory/generated_certs/private.key
-#Removing Certbot generated logs etc,we can uncomment it if we wanted to see logs
-certbot delete --cert-name $domainName
-rm -rf $Build_SourcesDirectory/cert_venv/
+cp -r $Build_SourcesDirectory/cert_venv/letsencrypt/archive/$domainName/* $Build_SourcesDirectory/generated_certs/
+cp -r $Build_SourcesDirectory/cert_venv/letsencrypt/archive/$domainName/fullchain*.pem $Build_SourcesDirectory/generated_certs/public.crt
+cp -r $Build_SourcesDirectory/cert_venv/letsencrypt/archive/$domainName/privkey*.pem $Build_SourcesDirectory/generated_certs/private.key
 
 #Convert Certificates to PFX
 openssl pkcs12 -export \
@@ -93,3 +90,7 @@ openssl pkcs12 -export \
     -passout pass:$clientSecret
 
 echo "generated certs stored in $Build_SourcesDirectory/generated_certs/ & .pfx cert password is $clientSecret"
+
+#Removing Certbot generated logs etc,we can uncomment it if we wanted to see logs
+certbot delete --cert-name $domainName
+rm -rf $Build_SourcesDirectory/cert_venv/

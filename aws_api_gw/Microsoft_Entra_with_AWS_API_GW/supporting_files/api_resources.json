@@ -1,7 +1,7 @@
 [
   {
-    "id": "a9w6kn",
-    "parentId": "bw6b22",
+    "id": "4jl5xm",
+    "parentId": "a66g3q",
     "pathPart": "{id}",
     "path": "/posts/{id}",
     "resourceMethods": {
@@ -9,8 +9,8 @@
     }
   },
   {
-    "id": "bw6b22",
-    "parentId": "smej2swyz4",
+    "id": "a66g3q",
+    "parentId": "0ki0oatw54",
     "pathPart": "posts",
     "path": "/posts",
     "resourceMethods": {

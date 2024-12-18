@@ -14,18 +14,14 @@ resource "local_file" "api_resources_json" {
   filename = var.api_resources_json
   content = "{}"
   provisioner "local-exec" {
-    command = "rm -rf ${self.filename}"
+    interpreter = [ "bash", "-c" ]
+    command = "aws apigateway get-resources --rest-api-id ${aws_api_gateway_rest_api.api.id} --region ${var.region} --output json | jq '.items | map(select(.path != \"/\"))' > ${var.api_resources_json}"
+    when = create
+  }
+  provisioner "local-exec" {
+    interpreter = [ "bash", "-c"]
+    command = "echo '{}' > ${self.filename}"
     when = destroy
   }
   depends_on = [ null_resource.sleep, aws_api_gateway_rest_api.api ]
-}
-resource "null_resource" "pull_methods" {
-  provisioner "local-exec" {
-    interpreter = [ "bash", "-c" ]
-    command = "aws apigateway get-resources --rest-api-id ${aws_api_gateway_rest_api.api.id} --region ${var.region} --output json | jq '.items | map(select(.path != \"/\"))' > ${var.api_resources_json}"
-  }
-  triggers = {
-    always_run = "${timestamp()}"
-  }
-  depends_on = [ aws_api_gateway_rest_api.api, local_file.api_resources_json, null_resource.sleep ]
 }
