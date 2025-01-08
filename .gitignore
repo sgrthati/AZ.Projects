@@ -19,3 +19,4 @@
 **/generated_certs
 *.tgz
 **/helm-charts/**
+**/trash/**

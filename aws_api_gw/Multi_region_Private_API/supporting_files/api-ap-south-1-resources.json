@@ -1,0 +1,11 @@
+[
+  {
+    "id": "j5en8r",
+    "parentId": "jenezywbj4",
+    "pathPart": "region",
+    "path": "/region",
+    "resourceMethods": {
+      "GET": {}
+    }
+  }
+]

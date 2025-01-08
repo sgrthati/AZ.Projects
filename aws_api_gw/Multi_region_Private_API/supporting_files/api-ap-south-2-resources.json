@@ -1,0 +1,11 @@
+[
+  {
+    "id": "taoc5c",
+    "parentId": "d3gisbj92g",
+    "pathPart": "region",
+    "path": "/region",
+    "resourceMethods": {
+      "GET": {}
+    }
+  }
+]
