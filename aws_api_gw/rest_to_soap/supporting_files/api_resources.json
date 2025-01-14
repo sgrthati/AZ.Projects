@@ -1,21 +1,20 @@
 [
   {
-    "id": "4jl5xm",
-    "parentId": "a66g3q",
-    "pathPart": "{id}",
-    "path": "/posts/{id}",
+    "id": "94ynrl",
+    "parentId": "zkdmzvdwrb",
+    "pathPart": "fahrenheitToCelsius",
+    "path": "/fahrenheitToCelsius",
     "resourceMethods": {
-      "GET": {}
+      "POST": {}
     }
   },
   {
-    "id": "a66g3q",
-    "parentId": "0ki0oatw54",
-    "pathPart": "posts",
-    "path": "/posts",
+    "id": "wzm5er",
+    "parentId": "zkdmzvdwrb",
+    "pathPart": "celsiusToFahrenheit",
+    "path": "/celsiusToFahrenheit",
     "resourceMethods": {
-      "DELETE": {},
-      "GET": {}
+      "POST": {}
     }
   }
 ]

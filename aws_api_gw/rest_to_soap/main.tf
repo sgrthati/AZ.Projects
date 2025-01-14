@@ -9,12 +9,13 @@ module "import_api" {
   openapi_spec = file("./supporting_files/openAPI.yaml")
   api_resources_json = "./supporting_files/api_resources.json"
   region = var.region
-  public_key = var.public_key  
+  public_key = var.public_key
 }
 module "api_operations" {
   source = "./modules/api_operations"
   openapi_yaml = "./supporting_files/openAPI.yaml"
   api_resources_json = "./supporting_files/api_resources.json"
   rest_api_id = module.import_api.rest_api_id
+  execution_arn = module.import_api.rest_api_execution_arn
   region = var.region
 }

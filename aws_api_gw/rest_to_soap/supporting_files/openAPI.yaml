@@ -1,73 +1,71 @@
 openapi: 3.0.0
 info:
-  title: AWS API
-  description: A free fake online REST API for testing and prototyping.
+  title: Demo REST and SOAP API
+  description: Demonstrates REST API with SOAP integration for temperature conversion.
   version: 1.0.0
 servers:
-  - url: https://jsonplaceholder.typicode.com
+  - url: https://www.w3schools.com/xml/tempconvert.asmx
+    description: REST operations server
 paths:
-  /posts:
-    get:
-      summary: Get all posts
+  /celsiusToFahrenheit:
+    post:
+      summary: Convert Celsius to Fahrenheit (SOAP)
+      description: Calls a SOAP endpoint to convert a temperature from Celsius to Fahrenheit.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CelsiusToFahrenheitRequest'
       responses:
         '200':
-          description: A list of posts
+          description: Response with the temperature converted to Fahrenheit
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Post'
+                $ref: '#/components/schemas/CelsiusToFahrenheitResponse'
         '500':
           description: Internal server error
-    delete:
-      summary: Get all posts
+  /fahrenheitToCelsius:
+    post:
+      summary: Convert Fahrenheit to Celsius (SOAP)
+      description: Calls a SOAP endpoint to convert a temperature from Fahrenheit to Celsius.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FahrenheitToCelsiusRequest'
       responses:
         '200':
-          description: A list of posts
+          description: Response with the temperature converted to Celsius
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Post'
-        '500':
-          description: Internal server error
-  /posts/{id}:
-    get:
-      summary: Get a post by ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID of the post to retrieve
-      responses:
-        '200':
-          description: A single post
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Post'
-        '404':
-          description: Post not found
+                $ref: '#/components/schemas/FahrenheitToCelsiusResponse'
         '500':
           description: Internal server error
 components:
   schemas:
-    Post:
+    CelsiusToFahrenheitRequest:
       type: object
       properties:
-        userId:
-          type: integer
-          description: The ID of the user who created the post
-        id:
-          type: integer
-          description: The unique ID of the post
-        title:
+        celsius:
+          type: number
+          description: The temperature in Celsius to convert
+    CelsiusToFahrenheitResponse:
+      type: object
+      properties:
+        fahrenheit:
           type: string
-          description: The title of the post
-        body:
+          description: The temperature converted to Fahrenheit
+    FahrenheitToCelsiusRequest:
+      type: object
+      properties:
+        fahrenheit:
+          type: number
+          description: The temperature in Fahrenheit to convert
+    FahrenheitToCelsiusResponse:
+      type: object
+      properties:
+        celsius:
           type: string
-          description: The body content of the post
+          description: The temperature converted to Celsius

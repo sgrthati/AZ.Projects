@@ -10,3 +10,6 @@ variable "rest_api_id" {
 variable "openapi_yaml" {
   type = string
 }
+variable "execution_arn" {
+  type = string
+}
