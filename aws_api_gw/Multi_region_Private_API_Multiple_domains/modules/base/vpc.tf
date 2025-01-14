@@ -171,37 +171,37 @@ resource "aws_lb_listener" "aws_lb_listener_1" {
     region = var.region.primary
   }
 }
-resource "aws_lb_listener_rule" "rule_1" {
-  listener_arn = aws_lb_listener.aws_lb_listener_1.arn
-  priority = 100
-  action {
-    type             = "redirect"
-    redirect {
-      host = "api1.${var.domain_name}"
-      protocol = "HTTPS"
-      status_code = "HTTP_302"
-    }
-  }
-  condition {
-    host_header {
-      values = ["api.${var.domain_name}"]
-    }
-  }
-}
 # resource "aws_lb_listener_rule" "rule_1" {
-#   provider = aws
 #   listener_arn = aws_lb_listener.aws_lb_listener_1.arn
-#   priority     = 100
+#   priority = 100
 #   action {
-#     type             = "forward"
-#     target_group_arn = aws_lb_target_group.tg_1.arn
+#     type             = "redirect"
+#     redirect {
+#       host = "api1.${var.domain_name}"
+#       protocol = "HTTPS"
+#       status_code = "HTTP_302"
+#     }
 #   }
 #   condition {
-#     path_pattern {
-#       values = ["/api/*"]
+#     host_header {
+#       values = ["api.${var.domain_name}"]
 #     }
 #   }
 # }
+resource "aws_lb_listener_rule" "rule_1" {
+  provider = aws
+  listener_arn = aws_lb_listener.aws_lb_listener_1.arn
+  priority     = 100
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.tg_1.arn
+  }
+  condition {
+    path_pattern {
+      values = ["/${var.api.name}/*"]
+    }
+  }
+}
 resource "aws_route53_record" "record_1" {
   provider = aws
   zone_id = aws_route53_zone.domain.zone_id
@@ -210,7 +210,7 @@ resource "aws_route53_record" "record_1" {
   alias {
     name                   = aws_lb.nlb_1.dns_name
     zone_id                = aws_lb.nlb_1.zone_id
-    evaluate_target_health = true
+    evaluate_target_health = false
   }
 }
 data "aws_vpc_endpoint_service" "service_1" {
@@ -350,38 +350,38 @@ resource "aws_lb_listener" "aws_lb_listener_2" {
     region = var.region.secondary
   }
 }
-resource "aws_lb_listener_rule" "rule_2" {
-  provider = aws.secondary
-  listener_arn = aws_lb_listener.aws_lb_listener_2.arn
-  priority = 100
-  action {
-    type             = "redirect"
-    redirect {
-      host = "api2.${var.domain_name}"
-      protocol = "HTTPS"
-      status_code = "HTTP_302"
-    }
-  }
-  condition {
-    host_header {
-      values = ["api.${var.domain_name}"]
-    }
-  }
-}
 # resource "aws_lb_listener_rule" "rule_2" {
 #   provider = aws.secondary
 #   listener_arn = aws_lb_listener.aws_lb_listener_2.arn
-#   priority     = 100
+#   priority = 100
 #   action {
-#     type             = "forward"
-#     target_group_arn = aws_lb_target_group.tg_2.arn
+#     type             = "redirect"
+#     redirect {
+#       host = "api2.${var.domain_name}"
+#       protocol = "HTTPS"
+#       status_code = "HTTP_302"
+#     }
 #   }
 #   condition {
-#     path_pattern {
-#       values = ["/api/*"]
+#     host_header {
+#       values = ["api.${var.domain_name}"]
 #     }
 #   }
 # }
+resource "aws_lb_listener_rule" "rule_2" {
+  provider = aws.secondary
+  listener_arn = aws_lb_listener.aws_lb_listener_2.arn
+  priority     = 100
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.tg_2.arn
+  }
+  condition {
+    path_pattern {
+      values = ["/${var.api.name}/*"]
+    }
+  }
+}
 resource "aws_route53_record" "record_2" {
   provider = aws.secondary
   zone_id = aws_route53_zone.domain.zone_id
@@ -390,7 +390,7 @@ resource "aws_route53_record" "record_2" {
   alias {
     name                   = aws_lb.nlb_2.dns_name
     zone_id                = aws_lb.nlb_2.zone_id
-    evaluate_target_health = true
+    evaluate_target_health = false
   }
 }
 data "aws_vpc_endpoint_service" "service_2" {

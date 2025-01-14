@@ -1,0 +1,178 @@
+openapi: "3.0.1"
+info:
+  title: "AWS API"
+  description: "A free fake online REST API for testing and prototyping."
+  version: "1.0.0"
+servers:
+- url: "https://shivamart.xyz"
+paths:
+  /posts/{id}:
+    get:
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "404":
+          description: "404 response"
+          content: {}
+        "500":
+          description: "500 response"
+          content: {}
+        "200":
+          description: "200 response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+      x-amazon-apigateway-integration:
+        type: "http"
+        httpMethod: "GET"
+        uri: "https://jsonplaceholder.typicode.com/posts/{id}"
+        responses:
+          default:
+            statusCode: "200"
+        requestParameters:
+          integration.request.path.id: "method.request.path.id"
+        passthroughBehavior: "when_no_match"
+    put:
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Post"
+        required: true
+      responses:
+        "404":
+          description: "404 response"
+          content: {}
+        "200":
+          description: "200 response"
+          content: {}
+        "400":
+          description: "400 response"
+          content: {}
+        "500":
+          description: "500 response"
+          content: {}
+      x-amazon-apigateway-integration:
+        type: "http"
+        httpMethod: "PUT"
+        uri: "https://jsonplaceholder.typicode.com/posts/{id}"
+        responses:
+          default:
+            statusCode: "200"
+        requestParameters:
+          integration.request.path.id: "method.request.path.id"
+        requestTemplates:
+          application/json: "{\n  \"userId\": \"$input.path('$.userId')\",\n  \"id\"\
+            : \"$input.path('$.id')\",\n  \"title\": \"$input.path('$.title')\",\n\
+            \  \"body\": \"$input.path('$.body')\"\n}\n"
+        passthroughBehavior: "when_no_templates"
+    delete:
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "404":
+          description: "404 response"
+          content: {}
+        "500":
+          description: "500 response"
+          content: {}
+        "200":
+          description: "200 response"
+          content: {}
+      x-amazon-apigateway-integration:
+        type: "http"
+        httpMethod: "DELETE"
+        uri: "https://jsonplaceholder.typicode.com/posts/{id}"
+        responses:
+          default:
+            statusCode: "200"
+        requestParameters:
+          integration.request.path.id: "method.request.path.id"
+        passthroughBehavior: "when_no_match"
+  /posts:
+    get:
+      responses:
+        "500":
+          description: "500 response"
+          content: {}
+        "200":
+          description: "200 response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArrayOfPost"
+      x-amazon-apigateway-integration:
+        type: "http"
+        httpMethod: "GET"
+        uri: "https://jsonplaceholder.typicode.com/posts"
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "when_no_match"
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Post"
+        required: true
+      responses:
+        "400":
+          description: "400 response"
+          content: {}
+        "500":
+          description: "500 response"
+          content: {}
+        "201":
+          description: "201 response"
+          content: {}
+      x-amazon-apigateway-integration:
+        type: "http"
+        httpMethod: "POST"
+        uri: "https://jsonplaceholder.typicode.com/posts"
+        responses:
+          default:
+            statusCode: "201"
+        requestTemplates:
+          application/json: "{\n  \"userId\": \"$input.path('$.userId')\",\n  \"title\"\
+            : \"$input.path('$.title')\",\n  \"body\": \"$input.path('$.body')\"\n\
+            }\n"
+        passthroughBehavior: "when_no_templates"
+components:
+  schemas:
+    ArrayOfPost:
+      type: "array"
+      items:
+        $ref: "#/components/schemas/Post"
+    Post:
+      type: "object"
+      properties:
+        userId:
+          type: "integer"
+          description: "The ID of the user who created the post"
+          format: "int32"
+        id:
+          type: "integer"
+          description: "The unique ID of the post"
+          format: "int32"
+        title:
+          type: "string"
+          description: "The title of the post"
+        body:
+          type: "string"
+          description: "The body content of the post"
