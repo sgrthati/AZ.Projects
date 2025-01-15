@@ -13,18 +13,21 @@ api = {
     path = "api"
 }
 vpc = {
-    primary = {
+    jumpbox = {
         cidr_block = "10.0.0.0/16"
-        lb_subnet_1 = "10.0.254.0/24"
-        lb_subnet_2 = "10.0.253.0/24"
-        api_subnet = "10.0.1.0/24"
-        jumpbox_subnet = "10.0.2.0/24"
+        jumpbox_subnet = "10.0.254.0/24"
+    }
+    primary = {
+        cidr_block = "10.1.0.0/16"
+        lb_subnet_1 = "10.1.254.0/24"
+        lb_subnet_2 = "10.1.253.0/24"
+        api_subnet = "10.1.1.0/24"
     }
     secondary = {
-        cidr_block = "192.168.0.0/16"
-        lb_subnet_1 = "192.168.254.0/24"
-        lb_subnet_2 = "192.168.253.0/24"
-        api_subnet = "192.168.1.0/24"
+        cidr_block = "10.2.0.0/16"
+        lb_subnet_1 = "10.2.254.0/24"
+        lb_subnet_2 = "10.2.253.0/24"
+        api_subnet = "10.2.1.0/24"
     }
 }
 custom_log_format = "{ \"requestId\" : \"$context.requestId\", \"ip\" : \"$context.identity.sourceIp\", \"requestTime\" : \"$context.requestTime\", \"httpMethod\" : \"$context.httpMethod\", \"resourcePath\" : \"$context.resourcePath\", \"status\" : \"$context.status\", \"protocol\" : \"$context.protocol\", \"responseLength\" : \"$context.responseLength\", \"apiId\" : \"$context.apiId\", \"userAgent\" : \"$context.identity.userAgent\", \"resourceId\" : \"$context.resourceId\", \"integrationLatency\" : \"$context.integrationLatency\", \"extendedRequestId\" : \"$context.extendedRequestId\", \"totalLatency\" : \"$context.responseLatency\", \"targetUrl\" : \"$context.method.request.url\", \"proxyUrl\" : \"https://$context.domainName$context.path\" }"

@@ -23,23 +23,13 @@ resource "aws_subnet" "api_subnet_1" {
     region = var.region.primary
   }
 }
-resource "aws_subnet" "lb_subnet_1_1" {
+resource "aws_subnet" "lb_subnet_1" {
   provider = aws
   vpc_id            = aws_vpc.vpc_1.id
-  cidr_block        = var.vpc.primary.lb_subnet_1
+  cidr_block        = var.vpc.primary.lb_subnet
   availability_zone = data.aws_availability_zones.available_1.names[0]
   tags = {
-    Name = "lb-subnet-1-1"
-    region = var.region.primary
-  }
-}
-resource "aws_subnet" "lb_subnet_1_2" {
-  provider = aws
-  vpc_id            = aws_vpc.vpc_1.id
-  cidr_block        = var.vpc.primary.lb_subnet_2
-  availability_zone = data.aws_availability_zones.available_1.names[1]
-  tags = {
-    Name = "lb-subnet-1-2"
+    Name = "lb-subnet"
     region = var.region.primary
   }
 }
@@ -68,8 +58,8 @@ resource "aws_lb" "nlb_1" {
   provider = aws
   name = "${var.api.name}-lb-${var.region.primary}"
   internal = true
-  load_balancer_type = "application"
-  subnets = [aws_subnet.lb_subnet_1_1.id, aws_subnet.lb_subnet_1_2.id]
+  load_balancer_type = "network"
+  subnets = [aws_subnet.lb_subnet_1.id]
   security_groups = [aws_security_group.api_sg.id]
   tags = {
     Name = "${var.api.name}-${var.region.primary}-lb"
@@ -80,14 +70,13 @@ resource "aws_lb_target_group" "tg_1" {
   provider = aws
   name     = "${var.api.name}-${var.region.primary}-tg"
   port     = 443
-  protocol = "HTTPS"
+  protocol = "TLS"
   target_type = "ip"
   vpc_id   = aws_vpc.vpc_1.id
   health_check {
     enabled             = true
     interval            = 30
     path                = "/"
-    protocol            = "HTTPS"
     timeout             = 5
     healthy_threshold   = 3
     unhealthy_threshold = 3
@@ -98,7 +87,7 @@ resource "aws_lb_listener" "aws_lb_listener_1" {
   provider = aws
   load_balancer_arn = aws_lb.nlb_1.arn
   port              = "443"
-  protocol          = "HTTPS"
+  protocol          = "TLS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
   certificate_arn = aws_acm_certificate.import_cert_1.arn
   default_action {
@@ -110,20 +99,6 @@ resource "aws_lb_listener" "aws_lb_listener_1" {
     region = var.region.primary
   }
 }
-resource "aws_lb_listener_rule" "rule_1" {
-  provider = aws
-  listener_arn = aws_lb_listener.aws_lb_listener_1.arn
-  priority     = 100
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.tg_1.arn
-  }
-  condition {
-    path_pattern {
-      values = ["/${var.api.name}/*"]
-    }
-  }
-}
 resource "aws_route53_record" "record_1" {
   provider = aws
   zone_id = aws_route53_zone.domain.zone_id
@@ -132,7 +107,7 @@ resource "aws_route53_record" "record_1" {
   alias {
     name                   = aws_lb.nlb_1.dns_name
     zone_id                = aws_lb.nlb_1.zone_id
-    evaluate_target_health = false
+    evaluate_target_health = true
   }
 }
 data "aws_vpc_endpoint_service" "service_1" {
@@ -184,27 +159,16 @@ resource "aws_subnet" "api_subnet_2" {
     region = var.region.secondary
   }
 }
-resource "aws_subnet" "lb_subnet_2_1" {
+resource "aws_subnet" "lb_subnet_2" {
   provider = aws.secondary
   vpc_id            = aws_vpc.vpc_2.id
-  cidr_block        = var.vpc.secondary.lb_subnet_1
+  cidr_block        = var.vpc.secondary.lb_subnet
   availability_zone = data.aws_availability_zones.available_2.names[0]
   tags = {
     Name = "lb-subnet-2-1"
     region = var.region.secondary
   }
 }
-resource "aws_subnet" "lb_subnet_2_2" {
-  provider = aws.secondary
-  vpc_id            = aws_vpc.vpc_2.id
-  cidr_block        = var.vpc.secondary.lb_subnet_2
-  availability_zone = data.aws_availability_zones.available_2.names[1]
-  tags = {
-    Name = "lb-subnet-2-2"
-    region = var.region.secondary
-  }
-}
-
 resource "aws_security_group" "api_sg_2" {
   provider = aws.secondary
   vpc_id = aws_vpc.vpc_2.id
@@ -230,9 +194,9 @@ resource "aws_lb" "nlb_2" {
   provider = aws.secondary
   name = "${var.api.name}-lb-${var.region.secondary}"
   internal = true
-  load_balancer_type = "application"
+  load_balancer_type = "network"
   security_groups = [aws_security_group.api_sg_2.id]
-  subnets = [aws_subnet.lb_subnet_2_1.id, aws_subnet.lb_subnet_2_2.id]
+  subnets = [aws_subnet.lb_subnet_2.id]
   tags = {
     Name = "${var.api.name}-${var.region.secondary}-lb"
     region = var.region.secondary
@@ -242,14 +206,13 @@ resource "aws_lb_target_group" "tg_2" {
   provider = aws.secondary
   name     = "${var.api.name}-${var.region.secondary}-tg"
   port     = 443
-  protocol = "HTTPS"
+  protocol = "TLS"
   target_type = "ip"
   vpc_id   = aws_vpc.vpc_2.id
   health_check {
     enabled             = true
     interval            = 30
     path                = "/"
-    protocol            = "HTTPS"
     timeout             = 5
     healthy_threshold   = 3
     unhealthy_threshold = 3
@@ -260,7 +223,7 @@ resource "aws_lb_listener" "aws_lb_listener_2" {
   provider = aws.secondary
   load_balancer_arn = aws_lb.nlb_2.arn
   port              = "443"
-  protocol          = "HTTPS"
+  protocol          = "TLS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
   certificate_arn = aws_acm_certificate.import_cert_2.arn
   default_action {
@@ -272,20 +235,6 @@ resource "aws_lb_listener" "aws_lb_listener_2" {
     region = var.region.secondary
   }
 }
-resource "aws_lb_listener_rule" "rule_2" {
-  provider = aws.secondary
-  listener_arn = aws_lb_listener.aws_lb_listener_2.arn
-  priority     = 100
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.tg_2.arn
-  }
-  condition {
-    path_pattern {
-      values = ["/${var.api.name}/*"]
-    }
-  }
-}
 resource "aws_route53_record" "record_2" {
   provider = aws.secondary
   zone_id = aws_route53_zone.domain.zone_id
@@ -294,7 +243,7 @@ resource "aws_route53_record" "record_2" {
   alias {
     name                   = aws_lb.nlb_2.dns_name
     zone_id                = aws_lb.nlb_2.zone_id
-    evaluate_target_health = false
+    evaluate_target_health = true
   }
 }
 data "aws_vpc_endpoint_service" "service_2" {
@@ -320,8 +269,7 @@ data "aws_network_interface" "nic_2" {
   provider = aws.secondary
   id = tolist(aws_vpc_endpoint.vpc_endpoint_2.network_interface_ids)[0]
 }
-
-##PEERING
+#Accept Peering
 resource "aws_vpc_peering_connection_accepter" "vpc_1_peer_accept" {
   provider                  = aws
   vpc_peering_connection_id = aws_vpc_peering_connection.inter_region_peering_1.id
