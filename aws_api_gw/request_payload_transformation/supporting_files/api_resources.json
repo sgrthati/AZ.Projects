@@ -1,0 +1,23 @@
+[
+  {
+    "id": "j95ic1",
+    "parentId": "sbv5zf",
+    "pathPart": "{id}",
+    "path": "/posts/{id}",
+    "resourceMethods": {
+      "DELETE": {},
+      "GET": {},
+      "PUT": {}
+    }
+  },
+  {
+    "id": "sbv5zf",
+    "parentId": "tj9ycnt000",
+    "pathPart": "posts",
+    "path": "/posts",
+    "resourceMethods": {
+      "GET": {},
+      "POST": {}
+    }
+  }
+]

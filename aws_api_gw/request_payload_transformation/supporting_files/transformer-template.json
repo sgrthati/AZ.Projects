@@ -1,0 +1,7 @@
+#set($inputRoot = $input.path('$'))
+  {
+    "userId": "$inputRoot.userId",
+    "id": "$inputRoot.id",
+    "title": "title is $inputRoot.title",
+    "body": "title is $inputRoot.body"
+  }
