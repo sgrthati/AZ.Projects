@@ -49,6 +49,17 @@ resource "aws_api_gateway_integration_response" "MyDemoIntegrationResponse" {
   }
   depends_on = [ aws_api_gateway_integration.get_integration ]
 }
+resource "aws_api_gateway_method_settings" "example" {
+  rest_api_id = var.rest_api_id
+  stage_name  = aws_api_gateway_stage.stage.stage_name
+  method_path = "*/*"
+
+  settings {
+    metrics_enabled = true
+    logging_level   = "INFO"
+    data_trace_enabled = true
+  }
+}
 resource "aws_api_gateway_deployment" "deployment" {
   rest_api_id = var.rest_api_id
 }
@@ -56,4 +67,5 @@ resource "aws_api_gateway_stage" "stage" {
   deployment_id = aws_api_gateway_deployment.deployment.id
   rest_api_id   = var.rest_api_id
   stage_name    = "dev"
+  xray_tracing_enabled = true
 }

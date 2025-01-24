@@ -1,6 +1,6 @@
 #to create api along with resources,methods
 resource "aws_api_gateway_rest_api" "api" {
-  name = "aws_api_gw"
+  name = "transformatin_aws_api_gw"
   body = var.openapi_spec
   put_rest_api_mode = "merge"
 }

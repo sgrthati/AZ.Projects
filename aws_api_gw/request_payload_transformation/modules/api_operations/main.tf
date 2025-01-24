@@ -60,6 +60,9 @@ resource "aws_api_gateway_method_settings" "all" {
     data_trace_enabled = true
   }
 }
+resource "aws_cloudwatch_log_group" "log_group_1" {
+  name = "/aws/apigateway/${var.rest_api_name}"
+}
 resource "aws_api_gateway_deployment" "deployment" {
   rest_api_id = var.rest_api_id
   depends_on = [ aws_api_gateway_integration.get_integration,
@@ -70,4 +73,5 @@ resource "aws_api_gateway_stage" "stage" {
   deployment_id = aws_api_gateway_deployment.deployment.id
   rest_api_id   = var.rest_api_id
   stage_name    = "dev"
+  depends_on = [ aws_cloudwatch_log_group.log_group_1 ]
 }

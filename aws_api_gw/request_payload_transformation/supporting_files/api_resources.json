@@ -1,7 +1,7 @@
 [
   {
-    "id": "j95ic1",
-    "parentId": "sbv5zf",
+    "id": "gtft23",
+    "parentId": "hvudwo",
     "pathPart": "{id}",
     "path": "/posts/{id}",
     "resourceMethods": {
@@ -11,8 +11,8 @@
     }
   },
   {
-    "id": "sbv5zf",
-    "parentId": "tj9ycnt000",
+    "id": "hvudwo",
+    "parentId": "lu2ftt36zi",
     "pathPart": "posts",
     "path": "/posts",
     "resourceMethods": {

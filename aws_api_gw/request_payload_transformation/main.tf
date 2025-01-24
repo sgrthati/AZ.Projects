@@ -17,5 +17,6 @@ module "api_operations" {
   api_resources_json = "./supporting_files/api_resources.json"
   rest_api_id = module.import_api.rest_api_id
   execution_arn = module.import_api.rest_api_execution_arn
+  rest_api_name = module.import_api.rest_api_name
   region = var.region
 }

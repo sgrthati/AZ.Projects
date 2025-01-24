@@ -1,6 +1,6 @@
 #to deploy Private API Gateway
 
-    cd aws_api_gw/Transofrmation/
+    cd aws_api_gw/request_payload_transformation/
     terraform init
     terraform plan --var-file=./env/dev.tfvars --target=module.import_api
     terraform apply --var-file=./env/dev.tfvars --target=module.import_api --auto-approve

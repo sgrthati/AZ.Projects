@@ -1,0 +1,21 @@
+[
+  {
+    "id": "cpdeg0",
+    "parentId": "3ryjtlseb5",
+    "pathPart": "posts",
+    "path": "/posts",
+    "resourceMethods": {
+      "DELETE": {},
+      "GET": {}
+    }
+  },
+  {
+    "id": "l8rzyv",
+    "parentId": "cpdeg0",
+    "pathPart": "{id}",
+    "path": "/posts/{id}",
+    "resourceMethods": {
+      "GET": {}
+    }
+  }
+]
