@@ -1,20 +1,20 @@
 [
   {
-    "id": "21m296",
-    "parentId": "c7n0pr",
-    "pathPart": "{id}",
-    "path": "/posts/{id}",
-    "resourceMethods": {
-      "GET": {}
-    }
-  },
-  {
-    "id": "c7n0pr",
-    "parentId": "52m7602mf5",
+    "id": "1g5lje",
+    "parentId": "05xl9ba2k2",
     "pathPart": "posts",
     "path": "/posts",
     "resourceMethods": {
       "DELETE": {},
+      "GET": {}
+    }
+  },
+  {
+    "id": "p527pu",
+    "parentId": "1g5lje",
+    "pathPart": "{id}",
+    "path": "/posts/{id}",
+    "resourceMethods": {
       "GET": {}
     }
   }

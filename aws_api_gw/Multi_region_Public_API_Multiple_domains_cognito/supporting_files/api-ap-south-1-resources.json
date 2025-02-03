@@ -1,0 +1,11 @@
+[
+  {
+    "id": "n9roco",
+    "parentId": "6wd5uf3fpd",
+    "pathPart": "region",
+    "path": "/region",
+    "resourceMethods": {
+      "GET": {}
+    }
+  }
+]

@@ -12,7 +12,9 @@ data "azuread_service_principals" "all" {
 resource "azuread_application" "app" {
   display_name = "aws-apigw-cognito"
   owners = [data.azuread_client_config.current.object_id]
-  identifier_uris = [aws_cognito_user_pool.pool_1.arn]
+  identifier_uris = [
+    "urn:amazon:cognito:sp:${aws_cognito_user_pool.pool_1.id}"
+    ]
   web {
     redirect_uris = [ "https://${aws_cognito_user_pool_domain.main.domain}.auth.${var.region.primary}.amazoncognito.com/saml2/idpresponse" ]
   }
@@ -27,6 +29,7 @@ resource "azuread_application" "app" {
       type = "Scope"
     }
   }
+  depends_on = [ aws_cognito_user_pool.pool_1 ]
 }
 
 resource "azuread_service_principal" "sp" {
@@ -35,22 +38,15 @@ resource "azuread_service_principal" "sp" {
   owners = [data.azuread_client_config.current.object_id]
   feature_tags {
     enterprise = true
+    custom_single_sign_on = true
+    gallery = false
   }
-}
-resource "azuread_group" "owner" {
-  display_name     = "aws-apigw-cognito-owners"
-  security_enabled = true
-  owners           = [data.azuread_client_config.current.object_id]
 }
 resource "azuread_user" "user" {
   user_principal_name = "apigwtest@srisri.xyz"
   display_name        = "apigwtest"
   mail_nickname       = "apigwtest"
   password            = "Cloud@20252025"
-}
-resource "azuread_group_member" "add_user_group" {
-  group_object_id  = azuread_group.owner.object_id
-  member_object_id = azuread_user.user.object_id
 }
 resource "azuread_app_role_assignment" "api_permissions" {
   for_each = { for v in flatten([
@@ -73,6 +69,7 @@ resource "azuread_app_role_assignment" "api_permissions" {
   resource_object_id  = each.value.resource_object_id
   app_role_id         = each.value.app_role_id
 }
+
 ##################################
 ##   PRIMARY REGION ##
 ##################################

@@ -1,9 +1,9 @@
 #!/bin/bash
 # set -euxo pipefail
-API_URL="https://api.example.int/api/posts/1"
+API_URL="https://api.shivamart.xyz/api/region"
 COGNITO_IDP_URL="https://cognito-idp.ap-south-1.amazonaws.com"
-CLIENT_ID="a5a57cds20r2qgo002v2nqo6e"
-CLIENT_SECRET="pns5f8ahtp2mr2r26im52hfv2oeo3kpjsgshvsk2j2rqhhalo2d"
+CLIENT_ID="75k49bl8q862ebq1782fggk6o8"
+CLIENT_SECRET="1vatfmahi8i8fipd8euilckrad54r8roj3s74s1mroltft9086v9"
 USERNAME="test"
 PASSWORD="Example@2025"
 
@@ -33,7 +33,7 @@ response=$(curl -s --location --request POST $COGNITO_IDP_URL \
 
 ACCESS_TOKEN=$(echo "$response" | jq -r '.AuthenticationResult.AccessToken')
 
-# echo "Access Token: $ACCESS_TOKEN"
+echo "Access Token: $ACCESS_TOKEN"
 
 curl -s -H "Authorization: Bearer $ACCESS_TOKEN" $API_URL
 

@@ -1,0 +1,11 @@
+[
+  {
+    "id": "kt8szc",
+    "parentId": "q1ne5oprg2",
+    "pathPart": "region",
+    "path": "/region",
+    "resourceMethods": {
+      "GET": {}
+    }
+  }
+]

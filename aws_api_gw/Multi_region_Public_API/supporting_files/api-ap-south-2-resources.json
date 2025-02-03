@@ -1,0 +1,11 @@
+[
+  {
+    "id": "zveza3",
+    "parentId": "yd9phibcdc",
+    "pathPart": "region",
+    "path": "/region",
+    "resourceMethods": {
+      "GET": {}
+    }
+  }
+]

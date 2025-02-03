@@ -1,0 +1,11 @@
+[
+  {
+    "id": "4zkkm6",
+    "parentId": "n2putn4dp3",
+    "pathPart": "region",
+    "path": "/region",
+    "resourceMethods": {
+      "GET": {}
+    }
+  }
+]
