@@ -7,11 +7,7 @@ data "aws_iam_policy_document" "domain_policy_1" {
     }
     actions = ["execute-api:Invoke"]
     resources = ["arn:aws:execute-api:${var.region.primary}:*:/domainnames/*", "arn:aws:execute-api:${var.region.primary}:*:*/*"]
-    # condition {
-    #   test     = "ArnEquals"
-    #   variable = "execute-api:viaDomainArn"
-    #   values = ["arn:aws:execute-api:${var.region.primary}:*:/domainnames/*"]
-    # }
+
   }
 }
 data "aws_iam_policy_document" "domain_policy_2" {
@@ -23,10 +19,6 @@ data "aws_iam_policy_document" "domain_policy_2" {
     }
     actions = ["execute-api:Invoke"]
     resources = ["arn:aws:execute-api:${var.region.secondary}:*:/domainnames/*", "arn:aws:execute-api:${var.region.secondary}:*:*/*"]
-    # condition {
-    #   test     = "ArnEquals"
-    #   variable = "execute-api:viaDomainArn"
-    #   values = ["arn:aws:execute-api:${var.region.secondary}:*:/domainnames/*"]
-    # }
+
   }
 }

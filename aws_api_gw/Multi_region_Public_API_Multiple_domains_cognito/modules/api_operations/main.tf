@@ -131,7 +131,6 @@ resource "aws_api_gateway_domain_name" "name_1" {
   provider = aws
   regional_certificate_arn = var.primary_acm_arn
   domain_name     = "api.${var.domain_name}"
-  # policy = data.aws_iam_policy_document.domain_policy_1.json
   endpoint_configuration {
     types = ["REGIONAL"]
   }
@@ -299,7 +298,6 @@ resource "aws_api_gateway_domain_name" "name_2" {
   provider = aws.secondary
   regional_certificate_arn = var.secondary_acm_arn
   domain_name     = "api.${var.domain_name}" 
-  # policy = data.aws_iam_policy_document.domain_policy_2.json
   endpoint_configuration {
     types = ["REGIONAL"]
   }
@@ -366,7 +364,6 @@ resource "aws_route53_record" "load_Balacing_1" {
   zone_id = var.zone_id
   name    = "api.${var.domain_name}"
   type    = "A"
-  # ttl = "1"
   weighted_routing_policy {
     weight = 1
   }
@@ -382,7 +379,6 @@ resource "aws_route53_record" "load_Balacing_2" {
   zone_id = var.zone_id
   name    = "api.${var.domain_name}"
   type    = "A"
-  # ttl = "1"
   weighted_routing_policy {
     weight = 1
   }

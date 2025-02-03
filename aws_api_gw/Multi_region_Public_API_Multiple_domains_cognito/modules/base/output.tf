@@ -19,11 +19,3 @@ output "cognito_client" {
 output "zone_id" {
   value = data.aws_route53_zone.zone.id
 }
-# output "custom_domain" {
-#   value = {
-#     domain_name_1 = "${aws_api_gateway_domain_name.name_1.domain_name}"
-#     domain_name_2 = "${aws_api_gateway_domain_name.name_2.domain_name}"
-#     domain_name_id_1 = "${aws_api_gateway_domain_name.name_1.domain_name_id}"
-#     domain_name_id_2 = "${aws_api_gateway_domain_name.name_2.domain_name_id}"
-#   }
-# }

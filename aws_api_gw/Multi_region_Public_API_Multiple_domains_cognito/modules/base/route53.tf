@@ -53,23 +53,3 @@ resource "aws_acm_certificate_validation" "cert_validate_2" {
   certificate_arn = aws_acm_certificate.cert_2.arn
   validation_record_fqdns = [aws_route53_record.cert_dns_2.fqdn]
 }
-# resource "aws_api_gateway_domain_name" "name_1" {
-#   provider = aws
-#   regional_certificate_arn = aws_acm_certificate.cert_1.arn
-#   domain_name     = "api.${var.domain_name}"
-#   policy = data.aws_iam_policy_document.domain_policy_1.json
-#   endpoint_configuration {
-#     types = ["REGIONAL"]
-#   }
-#   depends_on = [ aws_acm_certificate_validation.cert_validate_1 ]
-# }
-# resource "aws_api_gateway_domain_name" "name_2" {
-#   provider = aws.secondary
-#   regional_certificate_arn = aws_acm_certificate.cert_2.arn
-#   domain_name     = "api.${var.domain_name}" 
-#   policy = data.aws_iam_policy_document.domain_policy_2.json
-#   endpoint_configuration {
-#     types = ["REGIONAL"]
-#   }
-#   depends_on = [ aws_acm_certificate_validation.cert_validate_2 ]
-# }
