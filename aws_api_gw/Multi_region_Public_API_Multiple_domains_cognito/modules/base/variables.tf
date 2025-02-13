@@ -12,4 +12,4 @@ variable "api" {
 }
 variable "cognito" {
   type = map
-}
+} 
