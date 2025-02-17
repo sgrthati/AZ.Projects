@@ -5,8 +5,7 @@ resource "aws_api_gateway_rest_api" "api_1" {
   body = file("${var.api.openAPI_spec}")
   put_rest_api_mode = "merge"
   endpoint_configuration {
-    types = ["PRIVATE"]
-    vpc_endpoint_ids = [var.primary_vpc_endpoint_id]
+    types = ["REGIONAL"]
   }
   tags = {
     Name = var.api.name
@@ -34,13 +33,6 @@ resource "local_file" "api_resources_json_1" {
   }
   depends_on = [ null_resource.sleep_1, aws_api_gateway_rest_api.api_1 ]
 }
-
-resource "aws_lb_target_group_attachment" "tg-1" {
-  provider = aws
-  target_group_arn = var.primary_lb_tg_arn
-  target_id        = var.primary_vpc_endpoint_ip
-  port             = 443
-}
 ######################################################
 # Secondary region
 ######################################################
@@ -51,8 +43,7 @@ resource "aws_api_gateway_rest_api" "api_2" {
   body = file("${var.api.openAPI_spec_2}")
   put_rest_api_mode = "merge"
   endpoint_configuration {
-    types = ["PRIVATE"]
-    vpc_endpoint_ids = [var.secondary_vpc_endpoint_id]
+    types = ["REGIONAL"]
   }
   tags = {
     Name = var.api.name
@@ -80,11 +71,3 @@ resource "local_file" "api_resources_json_2" {
   }
   depends_on = [ null_resource.sleep_2, aws_api_gateway_rest_api.api_2 ]
 }
-
-resource "aws_lb_target_group_attachment" "tg-2" {
-  provider = aws.secondary
-  target_group_arn = var.secondary_lb_tg_arn
-  target_id        = var.secondary_vpc_endpoint_ip
-  port             = 443
-}
-

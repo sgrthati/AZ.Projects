@@ -1,6 +1,6 @@
 #to deploy Private API Gateway
 
-    cd aws_api_gw/Multi_region_Private_API/
+    cd aws_api_gw/Multi_region_Public_API_Multiple_domains_cognito/
     terraform init
     terraform plan --target=module.base --var-file "./env/dev.tfvars"
     terraform apply --target=module.base --var-file "./env/dev.tfvars" --auto-approve

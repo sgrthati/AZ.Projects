@@ -4,4 +4,4 @@ aws apigateway update-method \
       --region $2 \
       --resource-id $3 \
       --http-method $4\
-      --patch-operations op=replace,path=/apiKeyRequired,value=$5
+      --patch-operations op=replace,path=/apiKeyRequired,value=$5,from=body

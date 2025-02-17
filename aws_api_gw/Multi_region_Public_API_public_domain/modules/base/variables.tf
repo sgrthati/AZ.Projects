@@ -1,9 +1,3 @@
-variable "public_key" {
-    default = "~/.ssh/id_rsa.pub"
-}
-variable "vpc" {
-  type = map
-}
 variable "region" {
   type = object({
     primary   = string

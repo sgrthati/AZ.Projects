@@ -80,9 +80,10 @@ resource "null_resource" "enable_api_key_1" {
   }
   provisioner "local-exec" {
     interpreter = ["/bin/bash", "-c"]
-    command = "./supporting_files/update-aws-auth.sh ${var.primary_rest_api_id} ${var.region.primary} ${each.value.resource_id} ${each.value.http_method} true"
+    command = "./supporting_files/update-aws-auth.sh ${var.primary_rest_api_id} ${var.region.primary} ${each.value.resource_id} ${each.value.http_method} ${var.api.api_key}"
   }
   depends_on = [ aws_api_gateway_integration.get_integration_1 ]
+  triggers = { script_hash = sha256(file("./supporting_files/update-aws-auth.sh")) }
 }
 #api key
 resource "aws_api_gateway_api_key" "api_key_1" {
@@ -128,77 +129,58 @@ resource "aws_api_gateway_usage_plan_key" "usage_plan_key_1" {
 }
 resource "aws_api_gateway_domain_name" "name_1" {
   provider = aws
-  certificate_arn = var.primary_acm_arn
-  domain_name     = "api1.${var.domain_name}"
-  policy = data.aws_iam_policy_document.domain_policy_1.json
+  regional_certificate_arn = var.primary_acm_arn
+  domain_name     = "api.${var.domain_name}"
   endpoint_configuration {
-    types = ["PRIVATE"]
+    types = ["REGIONAL"]
   }
-}
-resource "aws_api_gateway_domain_name_access_association" "domain_association_1" {
-  provider = aws
-  access_association_source = var.primary_vpc_endpoint_id
-  access_association_source_type = "VPCE"
-  domain_name_arn = aws_api_gateway_domain_name.name_1.arn
 }
 resource "aws_api_gateway_base_path_mapping" "path_mapping_1" {
   provider = aws
   api_id = var.primary_rest_api_id
+  stage_name = aws_api_gateway_stage.stage_1.stage_name
   domain_name = aws_api_gateway_domain_name.name_1.domain_name
   domain_name_id = aws_api_gateway_domain_name.name_1.domain_name_id
   base_path = var.api.path
 }
-# resource "aws_api_gateway_domain_name" "name_1_1" {
-#   provider = aws
-#   certificate_arn = var.primary_acm_arn
-#   domain_name     = "api.${var.domain_name}"
-#   policy = data.aws_iam_policy_document.domain_policy_1.json
-#   endpoint_configuration {
-#     types = ["PRIVATE"]
-#   }
-# }
-# resource "aws_api_gateway_domain_name_access_association" "domain_association_1_1" {
-#   provider = aws
-#   access_association_source = var.primary_vpc_endpoint_id
-#   access_association_source_type = "VPCE"
-#   domain_name_arn = aws_api_gateway_domain_name.name_1_1.arn
-# }
-# resource "aws_api_gateway_base_path_mapping" "path_mapping_1_1" {
-#   provider = aws
-#   api_id = var.primary_rest_api_id
-#   stage_name = aws_api_gateway_stage.stage_1.stage_name
-#   domain_name = aws_api_gateway_domain_name.name_1_1.domain_name
-#   domain_name_id = aws_api_gateway_domain_name.name_1_1.domain_name_id
-#   base_path = var.api.path
-# }
 resource "aws_api_gateway_rest_api_policy" "policy_1" {
   provider    = aws
   rest_api_id = var.primary_rest_api_id
-  policy      = data.aws_iam_policy_document.policy_1.json
+  policy      = data.aws_iam_policy_document.domain_policy_1.json
   }
+resource "aws_api_gateway_method_settings" "metrics_1" {
+  rest_api_id = var.primary_rest_api_id
+  stage_name  = aws_api_gateway_stage.stage_1.stage_name
+  method_path = "*/*"
+
+  settings {
+    metrics_enabled = true
+    logging_level   = "INFO"
+    data_trace_enabled = true
+  }
+}
 #to deploy the API
 resource "aws_api_gateway_deployment" "deployment_1" {
   provider = aws
   rest_api_id = var.primary_rest_api_id
   depends_on = [ null_resource.enable_api_key_1,
-  aws_api_gateway_domain_name.name_1,
-  aws_api_gateway_domain_name_access_association.domain_association_1,
-  aws_api_gateway_rest_api_policy.policy_1,
-  # aws_api_gateway_domain_name.name_1_1,
-  # aws_api_gateway_domain_name_access_association.domain_association_1_1
   ]
+}
+resource "aws_cloudwatch_log_group" "log_group_1" {
+  name = "/aws/apigateway/${var.api.name}/${var.region.primary}/${var.api.stage}"
 }
 resource "aws_api_gateway_stage" "stage_1" {
   provider = aws
   deployment_id = aws_api_gateway_deployment.deployment_1.id
   rest_api_id   = var.primary_rest_api_id
   stage_name    = var.api.stage
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.log_group_1.arn
+    format = var.custom_log_format
+  }
   tags = {
     Name = "${var.api.name}-${var.api.stage}stage"
     region = var.region.primary
-  }
-  lifecycle {
-    create_before_destroy = true
   }
 }
 ###############################################################
@@ -242,13 +224,14 @@ resource "aws_api_gateway_integration_response" "int_response_2" {
   # Transforms the backend JSON response to XML
   response_templates = {
     "application/json" = <<EOF
-    { 
+    {
       "statusCode": 200,
       "region": "${var.region.secondary}"
     }
     EOF
   }
-  depends_on = [ aws_api_gateway_integration.get_integration_2 ]
+  depends_on = [ aws_api_gateway_integration.get_integration_2,
+                 ]
 }
 #to enable API-key for each method
 resource "null_resource" "enable_api_key_2" {
@@ -257,9 +240,10 @@ resource "null_resource" "enable_api_key_2" {
   }
   provisioner "local-exec" {
     interpreter = ["/bin/bash", "-c"]
-    command = "./supporting_files/update-aws-auth.sh ${var.secondary_rest_api_id} ${var.region.secondary} ${each.value.resource_id} ${each.value.http_method} true"
+    command = "./supporting_files/update-aws-auth.sh ${var.secondary_rest_api_id} ${var.region.secondary} ${each.value.resource_id} ${each.value.http_method} ${var.api.api_key}"
   }
   depends_on = [ aws_api_gateway_integration.get_integration_2 ]
+  triggers = { script_hash = sha256(file("./supporting_files/update-aws-auth.sh")) }
 }
 #api key
 resource "aws_api_gateway_api_key" "api_key_2" {
@@ -305,18 +289,11 @@ resource "aws_api_gateway_usage_plan_key" "usage_plan_key_2" {
 }
 resource "aws_api_gateway_domain_name" "name_2" {
   provider = aws.secondary
-  certificate_arn = var.secondary_acm_arn
-  domain_name     = "api2.${var.domain_name}" 
-  policy = data.aws_iam_policy_document.domain_policy_2.json
+  regional_certificate_arn = var.secondary_acm_arn
+  domain_name     = "api.${var.domain_name}" 
   endpoint_configuration {
-    types = ["PRIVATE"]
+    types = ["REGIONAL"]
   }
-}
-resource "aws_api_gateway_domain_name_access_association" "domain_association_2" {
-  provider = aws.secondary
-  access_association_source = var.secondary_vpc_endpoint_id
-  access_association_source_type = "VPCE"
-  domain_name_arn = aws_api_gateway_domain_name.name_2.arn
 }
 resource "aws_api_gateway_base_path_mapping" "mapping_2" {
   provider = aws.secondary
@@ -326,54 +303,75 @@ resource "aws_api_gateway_base_path_mapping" "mapping_2" {
   domain_name_id = aws_api_gateway_domain_name.name_2.domain_name_id
   base_path = var.api.path
 }
-# resource "aws_api_gateway_domain_name" "name_2_1" {
-#   provider = aws.secondary
-#   certificate_arn = var.secondary_acm_arn
-#   domain_name     = "api.${var.domain_name}"
-#   policy = data.aws_iam_policy_document.domain_policy_2.json
-#   endpoint_configuration {
-#     types = ["PRIVATE"]
-#   }
-# }
-# resource "aws_api_gateway_domain_name_access_association" "domain_association_2_1" {
-#   provider = aws.secondary
-#   access_association_source = var.secondary_vpc_endpoint_id
-#   access_association_source_type = "VPCE"
-#   domain_name_arn = aws_api_gateway_domain_name.name_2_1.arn
-# }
-# resource "aws_api_gateway_base_path_mapping" "path_mapping_2_1" {
-#   provider = aws.secondary
-#   api_id      = var.secondary_rest_api_id
-#   stage_name  = aws_api_gateway_stage.stage_2.stage_name
-#   domain_name_id = aws_api_gateway_domain_name.name_2_1.domain_name_id
-#   domain_name = aws_api_gateway_domain_name.name_2_1.domain_name
-#   base_path = var.api.path
-#   depends_on = [ aws_api_gateway_domain_name.name_2_1 ]
-# }
 resource "aws_api_gateway_rest_api_policy" "policy_2" {
   provider = aws.secondary
   rest_api_id = var.secondary_rest_api_id
-  policy      = data.aws_iam_policy_document.policy_2.json
+  policy      = data.aws_iam_policy_document.domain_policy_2.json
   }
 #to deploy the API
 resource "aws_api_gateway_deployment" "deployment_2" {
   provider = aws.secondary
   rest_api_id = var.secondary_rest_api_id
   depends_on = [ null_resource.enable_api_key_2,
-    aws_api_gateway_domain_name.name_2,
-    aws_api_gateway_domain_name_access_association.domain_association_2,
-    aws_api_gateway_rest_api_policy.policy_2,
-    # aws_api_gateway_domain_name.name_2_1,
-    # aws_api_gateway_domain_name_access_association.domain_association_2_1
   ]
+}
+resource "aws_cloudwatch_log_group" "log_group_2" {
+  provider = aws.secondary
+  name = "/aws/apigateway/${var.api.name}/${var.region.secondary}/${var.api.stage}"
+}
+resource "aws_api_gateway_method_settings" "metrics_2" {
+  provider = aws.secondary
+  rest_api_id = var.secondary_rest_api_id
+  stage_name  = aws_api_gateway_stage.stage_2.stage_name
+  method_path = "*/*"
+
+  settings {
+    metrics_enabled = true
+    logging_level   = "INFO"
+    data_trace_enabled = true
+  }
 }
 resource "aws_api_gateway_stage" "stage_2" {
   provider = aws.secondary
   deployment_id = aws_api_gateway_deployment.deployment_2.id
   rest_api_id   = var.secondary_rest_api_id
   stage_name    = var.api.stage
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.log_group_2.arn
+    format = var.custom_log_format
+  }
   tags = {
     Name = "${var.api.name}-${var.api.stage}stage"
     region = var.region.secondary
   }
+}
+#CNAME FOR LOAD BALANCING
+resource "aws_route53_record" "load_Balacing_1" {
+  zone_id = var.zone_id
+  name    = "api.${var.domain_name}"
+  type    = "A"
+  weighted_routing_policy {
+    weight = 1
+  }
+  alias {
+    name = aws_api_gateway_domain_name.name_1.regional_domain_name
+    zone_id = aws_api_gateway_domain_name.name_1.regional_zone_id
+    evaluate_target_health = false
+  }
+  set_identifier = var.region.primary
+}
+resource "aws_route53_record" "load_Balacing_2" {
+  provider = aws.secondary
+  zone_id = var.zone_id
+  name    = "api.${var.domain_name}"
+  type    = "A"
+  weighted_routing_policy {
+    weight = 1
+  }
+  alias {
+    name = aws_api_gateway_domain_name.name_2.regional_domain_name
+    zone_id = aws_api_gateway_domain_name.name_2.regional_zone_id
+    evaluate_target_health = false
+  }
+  set_identifier = var.region.secondary
 }
